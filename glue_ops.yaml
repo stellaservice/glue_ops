@@ -1,0 +1,13 @@
+repository:
+  current: true
+
+replace_algorithm:
+  UpdateWebImage:
+    type: 'yaml'
+    target: '.foo.bar'
+    replaceValue: {{{image_name}}}
+
+replacements:
+  - replace_algorithm: UpdateWebImage
+    files:
+      - './dummy_file.yaml'
