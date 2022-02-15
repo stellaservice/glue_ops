@@ -1,0 +1,7 @@
+foo:
+  bar: 'testing'
+  complex:
+    nesting: 'testing'
+image:
+  tag: 'testing'
+repository: 'foo'

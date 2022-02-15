@@ -1,0 +1,7 @@
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: '.image.tag'
+    replacementValue: testTag
+    files:
+      - '/tmp/test-sync.yaml'

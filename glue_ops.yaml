@@ -1,13 +1,19 @@
 repository:
   current: true
 
-replace_algorithm:
+fileSyncs:
   UpdateWebImage:
     type: 'yaml'
-    target: '.foo.bar'
-    replaceValue: {{{image_name}}}
-
-replacements:
-  - replace_algorithm: UpdateWebImage
+    target: '["connect-web"].image.tag'
+    # target: '.image.tag'
+    replacementValue: {{{image_tag}}}
     files:
-      - './dummy_file.yaml'
+      - '../deployment/apps/stella/connect/values/fra1/stella-connect-1/connect-web.yaml'
+      # - '../deployment/apps/stella/connect/values/sea1/stella-connect-1/connect-web.yaml'
+      # - './dummy_file.yaml'
+
+jobs:
+  - file_sync: UpdateWebImage
+    branches:
+      - master
+      - preprod
