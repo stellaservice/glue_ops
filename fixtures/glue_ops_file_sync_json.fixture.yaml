@@ -2,6 +2,6 @@ fileSyncs:
   UpdateWebImage:
     type: 'json'
     target: '.image.tag'
-    replacementValue: testTag
+    replacementValue: syncedTag
     files:
       - '/tmp/test-sync.json'

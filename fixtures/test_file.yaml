@@ -1,7 +1,7 @@
 foo:
-  bar: 'testing'
+  bar: 'testingBar'
   complex:
-    nesting: 'testing'
+    nesting: 'testingNesting'
 image:
-  tag: 'testing'
-repository: 'foo'
+  tag: 'testingTag'
+repository: 'testingRepository'

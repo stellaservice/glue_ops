@@ -10,35 +10,60 @@ const runAllSyncs = (configuration, dryRun = false) => {
 
 const runSync = (fileSync, dryRun = false) => {
   fileSync.files.forEach(file => {
-    let target_file_contents = loadTargetFileContents(file, fileSync.type)
-    jp.apply(target_file_contents, `$${fileSync.target}`, (value) => {
-      return fileSync.replacementValue;
-    })
+    const target_file_contents = fs.readFileSync(file);
+    let synced_contents = ''
 
     switch (fileSync.type) {
       case 'json':
-        target_file_contents = target_file_contents.toJson()
+        synced_contents = jsonSync(target_file_contents, fileSync)
         break;
       case 'yaml':
-        target_file_contents = yaml.dump(target_file_contents)
+        synced_contents = yamlSync(target_file_contents, fileSync)
+        break;
+      case 'regex':
+        synced_contents = regexSync(target_file_contents, fileSync)
         break;
     }
 
     if (dryRun) {
-      console.log(target_file_contents);
+      console.log(synced_contents);
     } else {
-      fs.writeFileSync(file, target_file_contents)
+      fs.writeFileSync(file, synced_contents)
     }
   })
 }
 
-function loadTargetFileContents(file, type) {
-  const contents = fs.readFileSync(file);
-  if (type === 'json') {
-    return JSON.parse(contents);
-  } else if (type === 'yaml') {
-    return yaml.load(contents);
-  }
+const jpApply = (contents, fileSync) => {
+  jp.apply(contents, `$${fileSync.target}`, (value) => {
+    return fileSync.replacementValue;
+  })
+
+  return contents
+}
+
+const jsonSync = (target_file_contents, fileSync) => {
+  let contents = JSON.parse(target_file_contents);
+
+  contents = jpApply(contents, fileSync)
+
+  return JSON.stringify(contents)
+}
+
+const yamlSync = (target_file_contents, fileSync) => {
+  let contents = yaml.load(target_file_contents);
+
+  contents = jpApply(contents, fileSync)
+
+  return yaml.dump(contents, {
+    lineWidth: -1,
+    forceQuotes: true,
+  })
+}
+
+const regexSync = (target_file_contents, fileSync) => {
+  const contents = target_file_contents.toString();
+
+  return contents.replace(new RegExp(fileSync.target), fileSync.replacementValue)
 }
 
 module.exports = { runAllSyncs, runSync }

@@ -2,7 +2,7 @@ const loadTemplatedConfiguration = require('../src/config')
 
 const templateCommand = {
   command: 'template',
-  describe: 'Prints your templated config file (default: .glue_ops.yaml) to STDOUT for debugging',
+  describe: 'Prints your templated config file to STDOUT for debugging purposes',
   builder: {
   'replacement-values': {
       alias: 'r',

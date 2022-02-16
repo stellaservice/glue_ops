@@ -1,0 +1,12 @@
+{
+  "foo": {
+    "bar": "testingBar",
+    "complex": {
+      "nesting": "testingNesting"
+    }
+  },
+  "image": {
+    "tag": "testingTag"
+  },
+  "repository": "testingRepository"
+}

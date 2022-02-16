@@ -2,15 +2,21 @@ repository:
   current: true
 
 fileSyncs:
+  # UpdateWebImage:
+  #   type: 'yaml'
+  #   target: '["connect-web"].image.tag'
+  #   # target: '.image.tag'
+  #   replacementValue: {{{image_tag}}}
+  #   files:
+  #     - '../deployment/apps/stella/connect/values/fra1/stella-connect-1/connect-web.yaml'
+  #     # - '../deployment/apps/stella/connect/values/sea1/stella-connect-1/connect-web.yaml'
+  #     # - './dummy_file.yaml'
   UpdateWebImage:
-    type: 'yaml'
-    target: '["connect-web"].image.tag'
-    # target: '.image.tag'
-    replacementValue: {{{image_tag}}}
+    type: 'regex'
+    target: '(tag:) [0-9].[0-9].[0-9]-pre-\w{7}-[0-9]{13}'
+    replacementValue: '$1 {{{image_tag}}}'
     files:
       - '../deployment/apps/stella/connect/values/fra1/stella-connect-1/connect-web.yaml'
-      # - '../deployment/apps/stella/connect/values/sea1/stella-connect-1/connect-web.yaml'
-      # - './dummy_file.yaml'
 
 jobs:
   - file_sync: UpdateWebImage
