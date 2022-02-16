@@ -14,6 +14,8 @@ const defaultOptions = {
 }
 
 yargs
+  .usage('$0 <cmd> [args] \n\n The glue for GitOps')
+  .scriptName("glue_ops")
   .command(require('./cmds/run'))
   .command(require('./cmds/sync'))
   .command(require('./cmds/template'))
