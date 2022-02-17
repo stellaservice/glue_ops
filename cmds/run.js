@@ -1,3 +1,6 @@
+const loadTemplatedConfiguration = require('../src/config')
+const run = require('../src/run')
+
 const runCommand = {
   command: 'run',
   describe: 'Applies file syncs and publishes repository changes',
@@ -13,7 +16,8 @@ const runCommand = {
     }
   },
   handler: (argv) => {
-    console.log("Running")
+    const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
+    run(config, argv.dryRun);
   }
 }
 
