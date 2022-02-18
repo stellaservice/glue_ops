@@ -1,6 +1,7 @@
 repository:
   # current: true
   url: https://github.medallia.com/Atlas/deployment
+  baseApiUrl: https://github.medallia.com/api/v3
 
 fileSyncs:
   UpdateWebImageProduction:
