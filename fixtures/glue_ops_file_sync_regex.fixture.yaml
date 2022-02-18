@@ -2,6 +2,6 @@ fileSyncs:
   UpdateWebImage:
     type: 'regex'
     target: '(tag:) .*'
-    replacementValue: '$1 syncedTag'
+    value: '$1 syncedTag'
     files:
       - '/tmp/test-sync.yaml'

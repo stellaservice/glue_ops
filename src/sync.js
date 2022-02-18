@@ -4,7 +4,7 @@ const jp = require('jsonpath');
 
 const runAllSyncs = (configuration, dryRun = false) => {
   configuration.jobs.forEach(job => {
-    runSync(configuration.fileSyncs[job.file_sync], dryRun)
+    runSync(configuration.fileSyncs[job.fileSync], dryRun)
   })
 }
 
@@ -35,7 +35,7 @@ const runSync = (fileSync, dryRun = false) => {
 
 const jpApply = (contents, fileSync) => {
   jp.apply(contents, `$${fileSync.target}`, (value) => {
-    return fileSync.replacementValue;
+    return fileSync.value;
   })
 
   return contents
@@ -63,7 +63,7 @@ const yamlSync = (target_file_contents, fileSync) => {
 const regexSync = (target_file_contents, fileSync) => {
   const contents = target_file_contents.toString();
 
-  return contents.replace(new RegExp(fileSync.target), fileSync.replacementValue)
+  return contents.replace(new RegExp(fileSync.target), fileSync.value)
 }
 
 module.exports = { runAllSyncs, runSync }
