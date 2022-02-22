@@ -1,6 +1,9 @@
 const fs = require('fs');
-const yaml = require('js-yaml')
+const YAML = require('yaml')
+const { YAMLMap } = require('yaml')
 const jp = require('jsonpath');
+
+Object.getPrototypeOf(YAMLMap).maxFlowStringSingleLineLength = 10000 // Stops yaml collections from wrapping
 
 const runAllSyncs = (configuration, dryRun = false) => {
   configuration.jobs.forEach(job => {
@@ -10,7 +13,7 @@ const runAllSyncs = (configuration, dryRun = false) => {
 
 const runSync = (fileSync, dryRun = false) => {
   fileSync.files.forEach(file => {
-    const target_file_contents = fs.readFileSync(file);
+    const target_file_contents = fs.readFileSync(file, 'utf8');
     let synced_contents = ''
 
     switch (fileSync.type) {
@@ -33,31 +36,23 @@ const runSync = (fileSync, dryRun = false) => {
   })
 }
 
-const jpApply = (contents, fileSync) => {
-  jp.apply(contents, `$${fileSync.target}`, (value) => {
-    return fileSync.value;
-  })
-
-  return contents
-}
-
 const jsonSync = (target_file_contents, fileSync) => {
   let contents = JSON.parse(target_file_contents);
 
-  contents = jpApply(contents, fileSync)
+  const jsonPath = fileSync.target.map(i => `['${i}']`).join('')
+  jp.apply(contents, `$${jsonPath}`, (value) => {
+    return fileSync.value;
+  })
 
   return JSON.stringify(contents)
 }
 
 const yamlSync = (target_file_contents, fileSync) => {
-  let contents = yaml.load(target_file_contents);
+  let doc = YAML.parseDocument(target_file_contents);
 
-  contents = jpApply(contents, fileSync)
+  doc.setIn(fileSync.target, fileSync.value)
 
-  return yaml.dump(contents, {
-    lineWidth: -1,
-    forceQuotes: true,
-  })
+  return doc.toString({ lineWidth: 0, minContentWidth: 0 })
 }
 
 const regexSync = (target_file_contents, fileSync) => {

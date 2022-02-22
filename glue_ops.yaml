@@ -18,29 +18,28 @@ fileSyncs:
   #   replacementValue: '$1 {{{image_tag}}}'
   #   files:
   #     - 'apps/stella/connect/values/den/stella-connect-1/connect-web.yaml'
-  # UpdateWebImageProduction:
-  #   type: 'yaml'
-  #   target: '["connect-web"].image.tag'
-  #   # target: '.image.tag'
-  #   replacementValue: {{{image_tag}}}
-  #   files:
-  #     - '../deployment/apps/stella/connect/values/fra1/stella-connect-1/connect-web.yaml'
-  #     - '../deployment/apps/stella/connect/values/sea1/stella-connect-1/connect-web.yaml'
-  TestYamlUpdate:
+  UpdateWebImageProduction:
     type: 'yaml'
-    target: '.image.tag'
+    target: ['connect-web', 'image', 'tag']
     value: {{{image_tag}}}
     files:
-      - './test.yaml'
+      - '../deployment/apps/stella/connect/values/fra1/stella-connect-1/connect-web.yaml'
+      # - '../deployment/apps/stella/connect/values/sea1/stella-connect-1/connect-web.yaml'
+  # TestYamlUpdate:
+  #   type: 'yaml'
+  #   target: '.image.tag'
+  #   value: {{{image_tag}}}
+  #   files:
+  #     - './test.yaml'
 
 jobs:
-  # - name: StellaConnectUpdateWebImageProduction # Make this name unique (collisions for the same repo & base branch can be dangerous)
-  #   fileSync: UpdateWebImageProduction
-  #   branch: master
+  - name: StellaConnectUpdateWebImageProduction # Make this name unique (collisions for the same repo & base branch can be dangerous)
+    fileSync: UpdateWebImageProduction
+    branch: master
   # - name: StellaConnectUpdateWebImagePreprod
   #   fileSync: UpdateWebImagePreprod
   #   branch: preprod
-  - name: TestYamlUpdate
-    fileSync: TestYamlUpdate
-    branch: master
+  # - name: TestYamlUpdate
+  #   fileSync: TestYamlUpdate
+  #   branch: master
 
