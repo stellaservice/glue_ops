@@ -1,6 +1,5 @@
-const { runAllSyncs, runSync } = require('../src/sync')
-const loadTemplatedConfiguration = require('../src/config')
-
+const { runAllSyncs, runSync } = require('../src/sync');
+const loadTemplatedConfiguration = require('../src/config');
 
 const syncCommand = {
   command: 'sync',
@@ -14,13 +13,13 @@ const syncCommand = {
     'dry-run': {
       type: 'boolean',
       describe: 'Prints file changes without updating the files',
-      default: false
-    }
+      default: false,
+    },
   },
   handler: (argv) => {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
     runAllSyncs(config, argv.dryRun);
-  }
-}
+  },
+};
 
-module.exports = syncCommand
+module.exports = syncCommand;
