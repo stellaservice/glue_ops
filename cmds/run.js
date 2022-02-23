@@ -2,7 +2,7 @@ const loadTemplatedConfiguration = require('../src/config');
 const run = require('../src/run');
 
 const runCommand = {
-  command: 'run',
+  command: 'run [jobName]',
   describe: 'Applies file syncs and publishes repository changes',
   builder: {
     'replacement-values': {
@@ -17,6 +17,15 @@ const runCommand = {
   },
   handler: (argv) => {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
+    if (argv.jobName) {
+      const filteredJob = config.jobs.filter((job) => (job.name === argv.jobName));
+      if (filteredJob) {
+        config.jobs = filteredJob;
+      } else {
+        console.log('Job name not found');
+      }
+    }
+
     run(config, argv.dryRun);
   },
 };

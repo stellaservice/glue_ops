@@ -10,7 +10,7 @@ glue_ops <cmd> [args]
 The glue for GitOps
 
 Commands:
-  glue_ops run              Applies file syncs and publishes repository changes
+  glue_ops run [jobName]    Applies file syncs and publishes repository changes
   glue_ops sync [syncName]  Applies your file syncs
   glue_ops template         Prints your templated config file to STDOUT for
                             debugging purposes
