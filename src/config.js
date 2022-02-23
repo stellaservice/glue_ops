@@ -1,21 +1,24 @@
 const fs = require('fs');
-const yaml = require('js-yaml')
-const jp = require('jsonpath');
+const YAML = require('yaml');
 const Mustache = require('mustache');
 
+/* eslint-disable no-param-reassign */
+const parseCliReplacements = (replacements) => (
+  replacements.replace(/\s+/g, '').split(',').reduce((options, currentOption) => {
+    const optionKv = currentOption.split('=');
+    const [key, value] = optionKv;
+    options[key] = optionKv[value];
+
+    return options;
+  })
+);
+/* eslint-disable no-param-reassign */
+
 const loadTemplatedConfiguration = (configPath, templateVariables = '') => {
-  const file = fs.readFileSync(configPath)
-  const variables = parseCliReplacements(templateVariables)
-  const templatedConfig = Mustache.render(file.toString(), variables)
-  return yaml.load(templatedConfig);
-}
+  const file = fs.readFileSync(configPath, 'utf-8');
+  const variables = parseCliReplacements(templateVariables);
+  const templatedConfig = Mustache.render(file.toString(), variables);
+  return YAML.parse(templatedConfig);
+};
 
-const parseCliReplacements = (replacements) => {
-  return replacements.replace(/\s+/g, '').split(',').reduce((options, currentOption) => {
-    const optionKv = currentOption.split('=')
-    options[optionKv[0]] = optionKv[1]
-    return options
-  }, {})
-}
-
-module.exports = loadTemplatedConfiguration
+module.exports = loadTemplatedConfiguration;
