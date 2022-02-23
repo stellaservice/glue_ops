@@ -3,21 +3,27 @@ const YAML = require('yaml');
 const Mustache = require('mustache');
 
 /* eslint-disable no-param-reassign */
-const parseCliReplacements = (replacements) => (
-  replacements.replace(/\s+/g, '').split(',').reduce((options, currentOption) => {
-    const optionKv = currentOption.split('=');
-    const [key, value] = optionKv;
-    options[key] = optionKv[value];
+const parseCliReplacements = (replacementValues) => {
+  if (!Array.isArray(replacementValues)) {
+    replacementValues = [replacementValues];
+  }
 
-    return options;
-  })
-);
+  return replacementValues.reduce((templateValues, replacement) => {
+    const replacementKv = replacement.replace(/\s+/g, '').split('=');
+    const [key, value] = replacementKv;
+
+    templateValues[key] = value;
+
+    return templateValues;
+  }, {});
+};
 /* eslint-disable no-param-reassign */
 
-const loadTemplatedConfiguration = (configPath, templateVariables = '') => {
+const loadTemplatedConfiguration = (configPath, replacementValues = '') => {
   const file = fs.readFileSync(configPath, 'utf-8');
-  const variables = parseCliReplacements(templateVariables);
-  const templatedConfig = Mustache.render(file.toString(), variables);
+  const templateValues = parseCliReplacements(replacementValues);
+  const templatedConfig = Mustache.render(file.toString(), templateValues);
+
   return YAML.parse(templatedConfig);
 };
 
