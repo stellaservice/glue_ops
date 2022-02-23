@@ -1,0 +1,10 @@
+repository:
+  local: true
+
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: ['image', 'tag']
+    value: {{{foo}}}
+    files:
+      - '/tmp/test-sync.yaml'
