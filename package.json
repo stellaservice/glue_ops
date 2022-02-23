@@ -16,6 +16,9 @@
     "@pollyjs/core": "^6.0.4",
     "@pollyjs/persister-fs": "^6.0.4",
     "@types/node": "^17.0.18",
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
     "jest": "26.6.3",
     "setup-polly-jest": "^0.10.0",
     "typescript": "^4.5.5"

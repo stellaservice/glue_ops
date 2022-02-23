@@ -1,64 +1,64 @@
 const fs = require('fs');
-const YAML = require('yaml')
-const { YAMLMap } = require('yaml')
+const YAML = require('yaml');
+const { YAMLMap } = require('yaml');
 const jp = require('jsonpath');
 
-Object.getPrototypeOf(YAMLMap).maxFlowStringSingleLineLength = 10000 // Stops yaml collections from wrapping
+Object.getPrototypeOf(YAMLMap).maxFlowStringSingleLineLength = 10000; // Stops yaml collections from wrapping
 
-const runAllSyncs = (configuration, dryRun = false) => {
-  configuration.jobs.forEach(job => {
-    runSync(configuration.fileSyncs[job.fileSync], dryRun)
-  })
-}
+const jsonSync = (targetFileContents, fileSync) => {
+  const contents = JSON.parse(targetFileContents);
+
+  const jsonPath = fileSync.target.map((i) => `['${i}']`).join('');
+  jp.apply(contents, `$${jsonPath}`, () => fileSync.value);
+
+  return JSON.stringify(contents);
+};
+
+const yamlSync = (targetFileContents, fileSync) => {
+  const doc = YAML.parseDocument(targetFileContents);
+
+  doc.setIn(fileSync.target, fileSync.value);
+
+  return doc.toString({ lineWidth: 0, minContentWidth: 0 });
+};
+
+const regexSync = (targetFileContents, fileSync) => {
+  const contents = targetFileContents.toString();
+
+  return contents.replace(new RegExp(fileSync.target), fileSync.value);
+};
 
 const runSync = (fileSync, dryRun = false) => {
-  fileSync.files.forEach(file => {
-    const target_file_contents = fs.readFileSync(file, 'utf8');
-    let synced_contents = ''
+  fileSync.files.forEach((file) => {
+    const targetFileContents = fs.readFileSync(file, 'utf8');
+    let syncedContents = '';
 
     switch (fileSync.type) {
       case 'json':
-        synced_contents = jsonSync(target_file_contents, fileSync)
+        syncedContents = jsonSync(targetFileContents, fileSync);
         break;
       case 'yaml':
-        synced_contents = yamlSync(target_file_contents, fileSync)
+        syncedContents = yamlSync(targetFileContents, fileSync);
         break;
       case 'regex':
-        synced_contents = regexSync(target_file_contents, fileSync)
+        syncedContents = regexSync(targetFileContents, fileSync);
         break;
+      default:
+        return console.log('Unsupported file sync type');
     }
 
     if (dryRun) {
-      console.log(synced_contents);
+      console.log(syncedContents);
     } else {
-      fs.writeFileSync(file, synced_contents)
+      fs.writeFileSync(file, syncedContents);
     }
-  })
-}
+  });
+};
 
-const jsonSync = (target_file_contents, fileSync) => {
-  let contents = JSON.parse(target_file_contents);
+const runAllSyncs = (configuration, dryRun = false) => {
+  configuration.jobs.forEach((job) => {
+    runSync(configuration.fileSyncs[job.fileSync], dryRun);
+  });
+};
 
-  const jsonPath = fileSync.target.map(i => `['${i}']`).join('')
-  jp.apply(contents, `$${jsonPath}`, (value) => {
-    return fileSync.value;
-  })
-
-  return JSON.stringify(contents)
-}
-
-const yamlSync = (target_file_contents, fileSync) => {
-  let doc = YAML.parseDocument(target_file_contents);
-
-  doc.setIn(fileSync.target, fileSync.value)
-
-  return doc.toString({ lineWidth: 0, minContentWidth: 0 })
-}
-
-const regexSync = (target_file_contents, fileSync) => {
-  const contents = target_file_contents.toString();
-
-  return contents.replace(new RegExp(fileSync.target), fileSync.value)
-}
-
-module.exports = { runAllSyncs, runSync }
+module.exports = { runAllSyncs, runSync };
