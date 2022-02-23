@@ -56,8 +56,8 @@ const runSync = (fileSync, dryRun = false) => {
 };
 
 const runAllSyncs = (configuration, dryRun = false) => {
-  configuration.jobs.forEach((job) => {
-    runSync(configuration.fileSyncs[job.fileSync], dryRun);
+  Object.keys(configuration.fileSyncs).forEach((fileSyncName) => {
+    runSync(configuration.fileSyncs[fileSyncName], dryRun);
   });
 };
 
