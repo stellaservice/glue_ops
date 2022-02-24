@@ -28,7 +28,7 @@ const configureGit = async (clonePath) => {
   return git;
 };
 
-const run = async (config, dryRun) => {
+const run = async (config) => {
   const repositoryUrl = new GhUrlParser(config.repository.url);
   const cloneDirName = repositoryUrl.repo.replace(/\//g, '');
   const clonePath = `${process.cwd()}/glue_ops_repos/${cloneDirName}`;
