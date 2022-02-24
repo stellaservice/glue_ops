@@ -8,12 +8,14 @@ const { createPr, cleanUpOldPrs } = require('./pr');
 
 const { GITHUB_TOKEN } = process.env;
 
-const initializeRepo = async (repositoryUrl, clonePath) => {
+const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
   if (!fs.existsSync(clonePath)) {
     fs.mkdirSync(clonePath, { recursive: true });
     const authRepoUrl = `${repositoryUrl.protocol}//${GITHUB_TOKEN}@${repositoryUrl.host}/${repositoryUrl.pathname}`;
     console.log(`Cloning: ${repositoryUrl.href} to: ${clonePath}`);
-    return simpleGit().clone(authRepoUrl, clonePath);
+    if (!dryRun) {
+      return simpleGit().clone(authRepoUrl, clonePath);
+    }
   }
   console.log(`Respository already exists: ${clonePath}`);
 };
@@ -21,55 +23,84 @@ const initializeRepo = async (repositoryUrl, clonePath) => {
 const configureGit = async (clonePath) => {
   const git = simpleGit();
   await git.cwd({ path: clonePath, root: true });
-  await git
-    .addConfig('user.name', 'GlueOpsBot')
-    .addConfig('user.email', 'glueops-bot@medallia.com');
 
   return git;
 };
 
+const clonePath = (repositoryUrl) => {
+  const cloneDirName = repositoryUrl.repo.replace(/\//g, '');
+  return `${process.cwd()}/glue_ops_repos/${cloneDirName}`;
+};
+
+const checkoutBranch = ({ git, job, prBranchName }, dryRun = false) => {
+  console.log(`Checking out branch ${prBranchName} from ${job.branch}`);
+
+  if (dryRun) return new Promise((resolve) => { resolve(); });
+
+  return git
+    .checkout(job.branch)
+    .fetch()
+    .reset('hard', [`origin/${job.branch}`])
+    .checkoutBranch(prBranchName, job.branch);
+};
+
+const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false) => {
+  console.log(`Commiting: '${commitMessage}'\nPushing: ${prBranchName}`);
+
+  if (dryRun) return new Promise((resolve) => { resolve(); });
+
+  return git
+    .add('.')
+    .commit(commitMessage, { '--author': '"GlueOpsBot <glueops-bot@medallia.com>"' })
+    .push('origin', prBranchName);
+};
+
+const runFilesync = (config, job, workingDirectory, dryRun) => {
+  console.log(`Running file sync: ${job.fileSync}`);
+
+  process.chdir(workingDirectory);
+
+  if (!dryRun) runSync(config.fileSyncs[job.fileSync]);
+};
+
 const run = async (config, dryRun) => {
   const repositoryUrl = new GhUrlParser(config.repository.url);
-  const cloneDirName = repositoryUrl.repo.replace(/\//g, '');
-  const clonePath = `${process.cwd()}/glue_ops_repos/${cloneDirName}`;
 
-  await initializeRepo(repositoryUrl, clonePath);
-  const git = await configureGit(clonePath);
+  let workingDirectory = process.cwd();
+
+  if (!config.repository.local) {
+    workingDirectory = clonePath(repositoryUrl);
+  }
+
+  await initializeRepo(repositoryUrl, workingDirectory, dryRun);
+  const git = await configureGit(workingDirectory);
 
   for (let i = 0; i < config.jobs.length; i++) {
     const job = config.jobs[i];
     const prBranchName = `${job.name}-${uuid.v4()}`;
+    const commitMessage = `GlueOps bot: ${job.name}`;
 
-    try {
-      await git
-        .checkout(job.branch)
-        .fetch()
-        .reset('hard', [`origin/${job.branch}`])
-        .checkoutBranch(prBranchName, job.branch);
+    await checkoutBranch({ git, job, prBranchName }, dryRun);
 
-      process.chdir(clonePath);
-      runSync(config.fileSyncs[job.fileSync]);
+    runFilesync(config, job, workingDirectory, dryRun);
 
-      const commitMessage = `GlueOps bot: ${job.name}`;
-      await git
-        .add('.')
-        .commit(commitMessage)
-        .push('origin', prBranchName);
+    await commitPushChanges({ git, prBranchName, commitMessage }, dryRun);
 
-      const prInfo = {
-        title: commitMessage,
-        owner: repositoryUrl.owner,
-        repo: repositoryUrl.name,
-        base: job.branch,
-        head: prBranchName,
-        jobName: job.name,
-        apiBaseUrl: config.repository.apiBaseUrl,
-      };
+    const prInfo = {
+      title: commitMessage,
+      owner: repositoryUrl.owner,
+      repo: repositoryUrl.name,
+      base: job.branch,
+      head: prBranchName,
+      jobName: job.name,
+      apiBaseUrl: config.repository.apiBaseUrl,
+    };
 
+    if (dryRun) {
+      console.log(`PR: ${prInfo.title}, From ${prInfo.head} to ${prInfo.base}`);
+    } else {
       const pr = await createPr(prInfo);
       await cleanUpOldPrs({ ...prInfo, newPrNumber: pr.data.number });
-    } catch (err) {
-      console.log(err);
     }
   }
 };
