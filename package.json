@@ -1,4 +1,15 @@
 {
+  "name": "glue_ops",
+  "engines": {
+    "node": ">=14.17.1"
+  },
+  "scripts": {
+    "lint": "yarn eslint src cmds glue_ops.js --ext .js"
+  },
+  "bin": "./glue_ops.js",
+  "publishConfig": {
+    "registry": "https://artifactory.eng.medallia.com/api/npm/virtual-npm/"
+  },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
     "jsonpath": "^1.1.1",
@@ -23,5 +34,6 @@
     "jest": "26.6.3",
     "setup-polly-jest": "^0.10.0",
     "typescript": "^4.5.5"
-  }
+  },
+  "version": "1.0.0"
 }
