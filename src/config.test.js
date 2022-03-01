@@ -3,10 +3,11 @@ const loadTemplatedConfiguration = require('./config');
 
 describe('loadTemplatedConfiguration', () => {
   const tmpFilePath = '/tmp/test-template.yaml';
+  const fixturePath = 'test/fixtures';
 
   describe('multiple replacement values', () => {
     beforeEach(() => {
-      const testFilePath = 'fixtures/glue_ops_template_multi.yaml';
+      const testFilePath = `${fixturePath}/glue_ops_template_multi.yaml`;
       const file = fs.readFileSync(testFilePath);
       fs.writeFileSync(tmpFilePath, file);
     });
@@ -22,7 +23,7 @@ describe('loadTemplatedConfiguration', () => {
 
   describe('single replacement value', () => {
     beforeEach(() => {
-      const testFilePath = 'fixtures/glue_ops_template.yaml';
+      const testFilePath = `${fixturePath}/glue_ops_template.yaml`;
       const file = fs.readFileSync(testFilePath);
       fs.writeFileSync(tmpFilePath, file);
     });

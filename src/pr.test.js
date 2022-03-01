@@ -1,27 +1,12 @@
-const { Polly } = require('@pollyjs/core');
-const { setupPolly } = require('setup-polly-jest');
-const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
-const FSPersister = require('@pollyjs/persister-fs');
 const GhUrlParser = require('parse-github-url');
+const pollyContext = require('../test/setup/setup_api_recording');
 
 const { createPr, cleanUpOldPrs } = require('./pr');
 
-Polly.register(NodeHttpAdapter);
-Polly.register(FSPersister);
-
 describe('PR', () => {
-  const context = setupPolly({
-    adapters: ['node-http'],
-    persister: 'fs',
-    mode: process.env.POLLY_RECORD === 'true' ? 'record' : 'replay',
-    matchRequestsBy: {
-      headers: false,
-    },
-  });
-
   beforeEach(() => {
     /* eslint-disable no-param-reassign */
-    context.polly.server.any().on('beforePersist', (req, recording) => {
+    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
       recording.request.headers = recording.request.headers.filter(({ name }) => name !== 'authorization');
     });
     /* eslint-disable no-param-reassign */

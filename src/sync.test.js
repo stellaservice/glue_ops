@@ -3,17 +3,19 @@ const YAML = require('yaml');
 const { runSync } = require('./sync');
 
 describe('runSync', () => {
+  const fixturePath = 'test/fixtures';
+
   describe('yaml target files', () => {
     const tmpFilePath = '/tmp/test-sync.yaml';
 
     beforeEach(() => {
-      const testFilePath = 'fixtures/test_file.yaml';
+      const testFilePath = `${fixturePath}/test_file.yaml`;
       const file = fs.readFileSync(testFilePath);
       fs.writeFileSync(tmpFilePath, file);
     });
 
     test('it syncs the image tag via yaml sync', () => {
-      const configFilePath = 'fixtures/glue_ops_file_sync_yaml.fixture.yaml';
+      const configFilePath = `${fixturePath}/glue_ops_file_sync_yaml.fixture.yaml`;
       const fileSync = YAML.parse(fs.readFileSync(configFilePath, 'utf-8')).fileSyncs.UpdateWebImage;
 
       runSync(fileSync);
@@ -23,7 +25,7 @@ describe('runSync', () => {
     });
 
     test('it syncs the image repo via regex sync', () => {
-      const configFilePath = 'fixtures/glue_ops_file_sync_regex.fixture.yaml';
+      const configFilePath = `${fixturePath}/glue_ops_file_sync_regex.fixture.yaml`;
       const fileSync = YAML.parse(fs.readFileSync(configFilePath, 'utf-8')).fileSyncs.UpdateWebImage;
 
       runSync(fileSync);
@@ -37,13 +39,13 @@ describe('runSync', () => {
     const tmpFilePath = '/tmp/test-sync.json';
 
     beforeEach(() => {
-      const testFilePath = 'fixtures/test_file.json';
+      const testFilePath = `${fixturePath}/test_file.json`;
       const file = fs.readFileSync(testFilePath, 'utf-8');
       fs.writeFileSync(tmpFilePath, file);
     });
 
     test('it syncs the image tag via json sync', () => {
-      const configFilePath = 'fixtures/glue_ops_file_sync_json.fixture.yaml';
+      const configFilePath = `${fixturePath}/glue_ops_file_sync_json.fixture.yaml`;
       const fileSync = YAML.parse(fs.readFileSync(configFilePath, 'utf-8')).fileSyncs.UpdateWebImage;
 
       runSync(fileSync);
