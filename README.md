@@ -21,6 +21,17 @@ Options:
   -c, --config-path  Sets the config path    [string] [default: "glue_ops.yaml"]
 ```
 
+## Install
+
+Glue_ops is currently published to the Medallia Artifactory virtual NPM repository.  To install via npm/yarn you must:
+1. Authenticate with artifactory (if not presently set)
+https://www.jfrog.com/confluence/display/JFROG/npm+Registry#npmRegistry-AuthenticatingthenpmClient
+2. Install via npm/yarn:
+Ex:
+```
+npm_config_registry=https://artifactory.eng.medallia.com/api/npm/virtual-npm/ yarn global add glue_ops
+```
+
 ## Architecture
 
 
