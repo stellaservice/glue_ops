@@ -32,6 +32,13 @@ Ex:
 npm_config_registry=https://artifactory.eng.medallia.com/api/npm/virtual-npm/ yarn global add glue_ops
 ```
 
+## Authentication
+
+For actions (run command) that rely on communicating with Github (cloning, PRing) the CLI relies on the environment variable GITHUB_TOKEN being set with proper scopes.
+This CLI has been tested with a personal access token including the following scopes: `repo, read:org`
+
+**Sync command can be used standalone without GITHUB_TOKEN*
+
 ## Architecture
 
 

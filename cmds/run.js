@@ -19,10 +19,11 @@ const runCommand = {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
     if (argv.jobName) {
       const filteredJob = config.jobs.filter((job) => (job.name === argv.jobName));
-      if (filteredJob) {
+      if (filteredJob.length > 0) {
         config.jobs = filteredJob;
       } else {
         console.log('Job name not found');
+        process.exit(1);
       }
     }
 

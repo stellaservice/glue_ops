@@ -8,19 +8,28 @@ const { createPr, cleanUpOldPrs } = require('./pr');
 
 const { GITHUB_TOKEN } = process.env;
 
+const emptyPromise = () => (
+  new Promise((resolve) => { resolve(); })
+);
+
 const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
-  if (!fs.existsSync(clonePath)) {
-    fs.mkdirSync(clonePath, { recursive: true });
-    const authRepoUrl = `${repositoryUrl.protocol}//${GITHUB_TOKEN}@${repositoryUrl.host}/${repositoryUrl.pathname}`;
-    console.log(`Cloning: ${repositoryUrl.href} to: ${clonePath}`);
-    if (!dryRun) {
-      return simpleGit().clone(authRepoUrl, clonePath);
-    }
+  if (fs.existsSync(clonePath)) {
+    console.log(`Respository already exists: ${clonePath}`);
+    return emptyPromise();
   }
-  console.log(`Respository already exists: ${clonePath}`);
+
+  console.log(`Cloning: ${repositoryUrl.href} to: ${clonePath}`);
+
+  if (dryRun) return emptyPromise();
+
+  fs.mkdirSync(clonePath, { recursive: true });
+  const authRepoUrl = `${repositoryUrl.protocol}//${GITHUB_TOKEN}@${repositoryUrl.host}/${repositoryUrl.pathname}`;
+  return simpleGit().clone(authRepoUrl, clonePath);
 };
 
-const configureGit = async (clonePath) => {
+const configureGit = async (clonePath, dryRun) => {
+  if (dryRun) return emptyPromise();
+
   const git = simpleGit();
   await git.cwd({ path: clonePath, root: true });
 
@@ -58,9 +67,10 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
 const runFilesync = (config, job, workingDirectory, dryRun) => {
   console.log(`Running file sync: ${job.fileSync}`);
 
-  process.chdir(workingDirectory);
-
-  if (!dryRun) runSync(config.fileSyncs[job.fileSync]);
+  if (!dryRun) {
+    process.chdir(workingDirectory);
+    runSync(config.fileSyncs[job.fileSync]);
+  }
 };
 
 const run = async (config, dryRun) => {
@@ -73,7 +83,7 @@ const run = async (config, dryRun) => {
   }
 
   await initializeRepo(repositoryUrl, workingDirectory, dryRun);
-  const git = await configureGit(workingDirectory);
+  const git = await configureGit(workingDirectory, dryRun);
 
   for (let i = 0; i < config.jobs.length; i++) {
     const job = config.jobs[i];
