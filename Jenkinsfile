@@ -38,7 +38,7 @@ pipeline {
         sh("docker build -t ${DOCKER_IMAGE}:${TAG_NAME} .")
         sh("docker push ${DOCKER_IMAGE}:${TAG_NAME}")
 
-        sh("yarn publish --tag ${TAG_NAME} --registry https://artifactory.eng.medallia.com/api/npm/virtual-npm/")
+        sh("yarn publish --registry https://artifactory.eng.medallia.com/api/npm/virtual-npm/")
       }
     }
   }
