@@ -11,7 +11,7 @@ const jsonSync = (targetFileContents, fileSync) => {
   const jsonPath = fileSync.target.map((i) => `['${i}']`).join('');
   jp.apply(contents, `$${jsonPath}`, () => fileSync.value);
 
-  return JSON.stringify(contents);
+  return JSON.stringify(contents, null, 2);
 };
 
 const yamlSync = (targetFileContents, fileSync) => {
