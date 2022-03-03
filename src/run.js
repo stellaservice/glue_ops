@@ -6,13 +6,13 @@ const GhUrlParser = require('parse-github-url');
 const { runSync } = require('./sync');
 const { createPr, cleanUpOldPrs } = require('./pr');
 
-const { GITHUB_TOKEN } = process.env;
-
 const emptyPromise = () => (
   new Promise((resolve) => { resolve(); })
 );
 
 const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
+  const { GITHUB_TOKEN } = process.env;
+
   if (fs.existsSync(clonePath)) {
     console.log(`Respository already exists: ${clonePath}`);
     return emptyPromise();
@@ -34,11 +34,6 @@ const configureGit = async (clonePath, dryRun) => {
   await git.cwd({ path: clonePath, root: true });
 
   return git;
-};
-
-const clonePath = (repositoryUrl) => {
-  const cloneDirName = repositoryUrl.repo.replace(/\//g, '');
-  return `${process.cwd()}/glue_ops_repos/${cloneDirName}`;
 };
 
 const checkoutBranch = ({ git, job, prBranchName }, dryRun = false) => {
@@ -79,7 +74,7 @@ const run = async (config, dryRun) => {
   let workingDirectory = process.cwd();
 
   if (!config.repository.local) {
-    workingDirectory = clonePath(repositoryUrl);
+    workingDirectory = `${config.repository.cloneDirectory || process.cwd()}/${repositoryUrl.name}`;
   }
 
   await initializeRepo(repositoryUrl, workingDirectory, dryRun);

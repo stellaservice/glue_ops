@@ -1,0 +1,16 @@
+repository:
+  url: https://github.test.com/org/testRepo
+  cloneDirectory: '/tmp/glueops'
+
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: ['image', 'tag']
+    value: tagTest
+    files:
+      - 'config.yaml'
+
+jobs:
+  - name: 'TestJob'
+    fileSync: UpdateWebImage
+    branch: master
