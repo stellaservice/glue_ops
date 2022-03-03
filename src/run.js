@@ -30,7 +30,7 @@ const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
 const configureGit = async (clonePath, dryRun) => {
   if (dryRun) return emptyPromise();
 
-  const git = simpleGit();
+  const git = simpleGit({}, { config: ['user.name="GlueOpsBot"', 'user.email="glueops-bot@medallia.com"'] });
   await git.cwd({ path: clonePath, root: true });
 
   return git;
@@ -60,7 +60,7 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
 
   return git
     .add('.')
-    .commit(commitMessage, { '--author': '"GlueOpsBot <glueops-bot@medallia.com>"' })
+    .commit(commitMessage)
     .push('origin', prBranchName);
 };
 
