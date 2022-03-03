@@ -1,0 +1,10 @@
+repository:
+  local: true
+
+fileSyncs:
+  UpdatePackageVersion:
+    type: 'json'
+    target: ['version']
+    value: {{{version}}}
+    files:
+      - './package.json'
