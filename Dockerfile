@@ -1,4 +1,4 @@
-FROM node:14.17.6-alpine3.13
+FROM node:14.17.6-slim
 
 RUN mkdir /opt/glue_ops
 WORKDIR /opt/glue_ops
