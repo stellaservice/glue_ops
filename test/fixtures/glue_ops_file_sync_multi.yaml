@@ -1,0 +1,13 @@
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: ['image', 'tag']
+    value: syncedTag
+    files:
+      - '/tmp/test-sync.yaml'
+  UpdateOther:
+    type: 'yaml'
+    target: ['foo', 'bar']
+    value: foobar
+    files:
+      - '/tmp/test-sync.yaml'
