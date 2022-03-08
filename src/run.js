@@ -74,7 +74,8 @@ const run = async (config, dryRun) => {
   let workingDirectory = process.cwd();
 
   if (!config.repository.local) {
-    workingDirectory = `${config.repository.cloneDirectory || process.cwd()}/${repositoryUrl.name}`;
+    workingDirectory = `${config.repository.cloneDirectory
+        || `${process.cwd()}/glue_ops_repos`}/${repositoryUrl.name}`;
   }
 
   await initializeRepo(repositoryUrl, workingDirectory, dryRun);
