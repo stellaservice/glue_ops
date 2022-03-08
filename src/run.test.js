@@ -44,6 +44,7 @@ describe('Run', () => {
 
   beforeEach(() => {
     process.env = { GITHUB_TOKEN: ghToken };
+    fs.rmdirSync(cloneDirectory, { recursive: true });
   });
 
   afterEach(() => {
