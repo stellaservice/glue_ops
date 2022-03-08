@@ -5,7 +5,7 @@ const run = require('./run');
 const readYamlFile = require('../test/utils/readYamlFile');
 
 jest.mock('simple-git', () => {
-  const mGit = jest.requireActual('simple-git')();
+  const mGit = jest.requireActual('simple-git')({}, { config: ['user.name="test"', 'user.email="test@test.com"'] });
 
   mGit.clone = jest.fn(() => {
     /* eslint-disable global-require */

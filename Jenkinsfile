@@ -19,7 +19,7 @@ pipeline {
     stage('CI') {
       agent {
         docker {
-          image "node:14.17.6-slim"
+          image "node:14.17.6-stretch"
           args "-u 0"
         }
       }
