@@ -32,20 +32,12 @@ Ex:
 npm_config_registry=https://artifactory.eng.medallia.com/api/npm/virtual-npm/ yarn global add glue_ops
 ```
 
-## Authentication
-
-For actions (run command) that rely on communicating with Github (cloning, PRing) the CLI relies on the environment variable GITHUB_TOKEN being set with proper scopes.
-This CLI has been tested with a personal access token including the following scopes: `repo, read:org`
-
-**Sync command can be used standalone without GITHUB_TOKEN*
-
-## Architecture
+## Functionality
 
 
 Glue Ops has two main functions:
 1. It helps you automate and make changes to a file or group of files.
 2. It helps you automate the process of cloning, branching, committing, PRing changes along with cleaning up old PRs.
-
 
 ## Configuration:
 glue_ops requires a configuration file (default glue_ops.yaml) to run.  It allows dynamic values via mustache templating.  Template values must be provided via the CLI with the `-r, --replacement-values` flag.  For multiple replacement values, use the flag multiple times.
@@ -77,6 +69,13 @@ jobs:
     fileSync: namedSync # This must be a reference to a named fileSync
     branch: master # Used to branch off of and PR back to
 ```
+
+## Authentication
+
+For actions (run command) that rely on communicating with Github (cloning, PRing) the CLI relies on the environment variable GITHUB_TOKEN being set with proper scopes.
+This CLI has been tested with a personal access token including the following scopes: `repo, read:org`
+
+**Sync command can be used standalone without GITHUB_TOKEN**
 
 ## File Syncs
 
