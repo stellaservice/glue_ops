@@ -27,7 +27,7 @@ const createPr = async ({
     labels: [GLUE_BOT_LABEL, jobName],
   });
 
-  console.log(`Created PR: ${pr.data.number}`);
+  console.log(`Created PR: ${pr.data.html_url}`);
   return pr;
 };
 
