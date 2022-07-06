@@ -25,7 +25,7 @@ const syncCommand = {
         console.log('Sync name not found');
       }
     } else {
-      runAllSyncs(config, argv.dryRun);
+      runAllSyncs(config.fileSyncs, argv.dryRun);
     }
   },
 };

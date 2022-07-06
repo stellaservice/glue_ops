@@ -66,7 +66,7 @@ fileSyncs:
 
 jobs:
   - name: UniqueName # Make this name unique (collisions for the same repo & base branch can be dangerous)
-    fileSync: namedSync # This must be a reference to a named fileSync
+    fileSyncs: [] namedSync # This must be a reference to a named fileSync
     branch: master # Used to branch off of and PR back to
 ```
 
@@ -86,7 +86,7 @@ File syncs helps you automate changes to a file or group of files.  It currently
 The run command automates the following steps:
 1. Clones and checks out repository if necessary
 2. Branches off your desired branch
-3. Runs the fileSync for the job 
+3. Runs the fileSyncs for the job
 4. Commits and pushes the changes
 5. Creates a pull request for the changes
 6. Deletes old PRs created by the job

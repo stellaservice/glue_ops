@@ -59,13 +59,15 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
     .push('origin', prBranchName);
 };
 
-const runFilesync = (config, job, workingDirectory, dryRun) => {
-  console.log(`Running file sync: ${job.fileSync}`);
+const runFilesyncs = (config, job, workingDirectory, dryRun) => {
+  job.fileSyncs.forEach((sync) => {
+    console.log(`Running file sync: ${sync}`);
 
-  if (!dryRun) {
-    process.chdir(workingDirectory);
-    runSync(config.fileSyncs[job.fileSync]);
-  }
+    if (!dryRun) {
+      process.chdir(workingDirectory);
+      runSync(config.fileSyncs[sync]);
+    }
+  });
 };
 
 const run = async (config, dryRun) => {
@@ -88,7 +90,7 @@ const run = async (config, dryRun) => {
 
     await checkoutBranch({ git, job, prBranchName }, dryRun);
 
-    runFilesync(config, job, workingDirectory, dryRun);
+    runFilesyncs(config, job, workingDirectory, dryRun);
 
     await commitPushChanges({ git, prBranchName, commitMessage }, dryRun);
 

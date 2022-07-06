@@ -62,7 +62,7 @@ describe('run', () => {
 
     it('calls runSync with each file sync', () => {
       const config = readYamlFile(`${fixturePath}/glue_ops_file_sync_multi.yaml`);
-      runAllSyncs(config);
+      runAllSyncs(config.fileSyncs);
 
       const testFile = readYamlFile(tmpFilePath);
       expect(testFile.image.tag).toBe('syncedTag');
