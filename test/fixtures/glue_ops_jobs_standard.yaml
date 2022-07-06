@@ -12,5 +12,5 @@ fileSyncs:
 
 jobs:
   - name: 'TestJob'
-    fileSync: UpdateWebImage
+    fileSyncs: [UpdateWebImage]
     branch: master

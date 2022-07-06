@@ -55,9 +55,9 @@ const runSync = (fileSync, dryRun = false) => {
   });
 };
 
-const runAllSyncs = (configuration, dryRun = false) => {
-  Object.keys(configuration.fileSyncs).forEach((fileSyncName) => {
-    runSync(configuration.fileSyncs[fileSyncName], dryRun);
+const runAllSyncs = (fileSyncs, dryRun = false) => {
+  Object.keys(fileSyncs).forEach((fileSyncName) => {
+    runSync(fileSyncs[fileSyncName], dryRun);
   });
 };
 
