@@ -12,7 +12,7 @@ describe('PR', () => {
     /* eslint-disable no-param-reassign */
   });
 
-  const REPOSITORY_URL = new GhUrlParser('https://github.com/stellaservice/glue_ops');
+  let REPOSITORY_URL = new GhUrlParser('https://github.com/stellaservice/glue_ops');
 
   describe('createPR', () => {
     it('creates a PR and labels it', async () => {
@@ -32,6 +32,20 @@ describe('PR', () => {
   describe('cleanUpOldPrs', () => {
     it('deletes the existing PRs but not the current', async () => {
       await cleanUpOldPrs({
+        owner: REPOSITORY_URL.owner,
+        repo: REPOSITORY_URL.name,
+        base: 'master',
+        jobName: 'TestPR',
+        newPrNumber: 8,
+      });
+    });
+  });
+
+  describe('cleanUpOldPrsPaginate', () => {
+    it('can paginate through multiple pages of PRs', async () => {
+      REPOSITORY_URL = new GhUrlParser('https://github.medallia.com/atlas/deployment');
+      await cleanUpOldPrs({
+        apiBaseUrl: 'https://github.medallia.com/api/v3',
         owner: REPOSITORY_URL.owner,
         repo: REPOSITORY_URL.name,
         base: 'master',
