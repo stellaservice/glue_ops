@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn
+        run: npm install
       - name: Lint
-        run: yarn lint
+        run: npm run lint
       - name: Run jest specs
-        run: yarn jest
+        run: npx jest

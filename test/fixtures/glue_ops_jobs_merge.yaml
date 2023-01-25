@@ -1,0 +1,21 @@
+repository:
+  url: https://github.com/stellaservice/glueops-test-repo
+  cloneDirectory: '/tmp/glueops'
+
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: ['image', 'tag']
+    value: tagTest
+    files:
+      - 'config.yaml'
+
+jobs:
+  - name: 'TestJob'
+    fileSyncs: [UpdateWebImage]
+    branch: main
+    approval:
+      token: token
+    merge:
+      method: 'squash'  # Can be one of: merge, squash, rebase
+      pollPrTimeout: 600 # seconds

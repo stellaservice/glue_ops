@@ -1,13 +1,13 @@
 const { commonOptionFlags, prepareConfig } = require('./utils');
-const Run = require('../src/run');
+const Publish = require('../src/publish');
 
 const runCommand = {
-  command: 'run [jobName]',
-  describe: 'Runs publish and merge',
+  command: 'publish [jobName]',
+  describe: 'Applies file syncs and publishes to repository',
   builder: commonOptionFlags,
   handler: (argv) => {
     const config = prepareConfig(argv);
-    Run(config, { dryRun: argv.dryRun });
+    Publish(config, { dryRun: argv.dryRun });
   },
 };
 

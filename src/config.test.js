@@ -1,20 +1,13 @@
-const fs = require('fs');
 const loadTemplatedConfiguration = require('./config');
 
 describe('loadTemplatedConfiguration', () => {
-  const tmpFilePath = '/tmp/test-template.yaml';
   const fixturePath = 'test/fixtures';
 
   describe('multiple replacement values', () => {
-    beforeEach(() => {
-      const testFilePath = `${fixturePath}/glue_ops_template_multi.yaml`;
-      const file = fs.readFileSync(testFilePath);
-      fs.writeFileSync(tmpFilePath, file);
-    });
-
     it('templates an array of replacements and returns config object', () => {
+      const testFilePath = `${fixturePath}/glue_ops_template_multi.yaml`;
       const templateVariables = ['foo=bar', 'bar=foo'];
-      const config = loadTemplatedConfiguration(tmpFilePath, templateVariables);
+      const config = loadTemplatedConfiguration(testFilePath, templateVariables);
 
       expect(typeof config).toBe('object');
       expect(config.fileSyncs.UpdateWebImage.value).toBe('bar-foo');
@@ -22,18 +15,22 @@ describe('loadTemplatedConfiguration', () => {
   });
 
   describe('single replacement value', () => {
-    beforeEach(() => {
-      const testFilePath = `${fixturePath}/glue_ops_template.yaml`;
-      const file = fs.readFileSync(testFilePath);
-      fs.writeFileSync(tmpFilePath, file);
-    });
-
     it('templates an individual replacement', () => {
+      const testFilePath = `${fixturePath}/glue_ops_template.yaml`;
       const templateVariables = 'foo=bar';
-      const config = loadTemplatedConfiguration(tmpFilePath, templateVariables);
+      const config = loadTemplatedConfiguration(testFilePath, templateVariables);
 
       expect(typeof config).toBe('object');
       expect(config.fileSyncs.UpdateWebImage.value).toBe('bar');
+    });
+  });
+
+  describe('Merges default values', () => {
+    it('merges job defaults', () => {
+      const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_jobs_standard.yaml`);
+
+      expect(config.jobs[0].merge.pollPrTimeout).toBe(600);
+      expect(config.jobs[0].approval.enabled).toBe(true);
     });
   });
 });

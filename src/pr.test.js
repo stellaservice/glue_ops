@@ -1,12 +1,15 @@
 const GhUrlParser = require('parse-github-url');
 const pollyContext = require('../test/setup/setup_api_recording');
+const { GhClient } = require('./utils');
 
-const { createPr, cleanUpOldPrs } = require('./pr');
+const {
+  createPr, cleanUpOldPrs, pollStatusCheck, approvePr, mergePr, findGlueOpsBotPrs,
+} = require('./pr');
 
 describe('PR', () => {
   beforeEach(() => {
     /* eslint-disable no-param-reassign */
-    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
+    pollyContext.polly.server.any().on('beforePersist', (_, recording) => {
       recording.request.headers = recording.request.headers.filter(({ name }) => name !== 'authorization');
     });
     /* eslint-disable no-param-reassign */
@@ -52,6 +55,57 @@ describe('PR', () => {
         jobName: 'TestPR',
         newPrNumber: 8,
       });
+    });
+  });
+
+  describe('pollStatusCheck', () => {
+    const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+
+    it('returns true if mergable', async () => {
+      const pr = { number: 1 };
+      const returnValue = await pollStatusCheck(GhClient(), pr, repositoryUrl);
+
+      expect(returnValue).toBe(true);
+    });
+
+    it('returns false if status checks are running', async () => {
+      const pr = { number: 2 };
+      const timeout = -1;
+      const returnValue = await pollStatusCheck(GhClient(), pr, repositoryUrl, timeout);
+
+      expect(returnValue).toBe(false);
+    });
+  });
+
+  describe('approvePr', () => {
+    const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+    const pr = { number: 2 };
+
+    it('creates a PR approval', async () => {
+      const returnValue = await approvePr(GhClient(), pr, repositoryUrl);
+
+      expect(returnValue.status).toBe(200);
+    });
+  });
+
+  describe('mergePr', () => {
+    const pr = { number: 3 };
+    const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+    const mergeMethod = 'squash';
+
+    it('merges PR', async () => {
+      const returnValue = await mergePr(GhClient(), pr, repositoryUrl, mergeMethod);
+
+      expect(returnValue.status).toBe(200);
+    });
+  });
+
+  describe('findGlueOpsBotPrs', () => {
+    it('returns an array of botPrs', async () => {
+      const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+      const result = await findGlueOpsBotPrs(GhClient(), repositoryUrl.owner, repositoryUrl.name, 'main', 'TestJob');
+
+      expect(result[0].number).toBe(2);
     });
   });
 });

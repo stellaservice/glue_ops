@@ -1,7 +1,17 @@
 const fs = require('fs');
+const merge = require('deepmerge');
 const YAML = require('yaml');
 const Mustache = require('mustache');
 
+const JOB_CONFIGURATION_DEFAULTS = {
+  approval: {
+    enabled: true,
+  },
+  merge: {
+    method: 'squash',
+    pollPrTimeout: 600,
+  },
+};
 /* eslint-disable no-param-reassign */
 const parseCliReplacements = (replacementValues) => {
   if (!Array.isArray(replacementValues)) {
@@ -19,12 +29,22 @@ const parseCliReplacements = (replacementValues) => {
 };
 /* eslint-disable no-param-reassign */
 
+const mergeDefaults = (config) => {
+  if (config.jobs) {
+    for (let i = 0; i < config.jobs.length; i++) {
+      config.jobs[i] = merge(JOB_CONFIGURATION_DEFAULTS, config.jobs[i]);
+    }
+  }
+  return config;
+};
+
 const loadTemplatedConfiguration = (configPath, replacementValues = '') => {
   const file = fs.readFileSync(configPath, 'utf-8');
   const templateValues = parseCliReplacements(replacementValues);
   const templatedConfig = Mustache.render(file.toString(), templateValues);
+  const parsedConfig = YAML.parse(templatedConfig);
 
-  return YAML.parse(templatedConfig);
+  return mergeDefaults(parsedConfig);
 };
 
 module.exports = loadTemplatedConfiguration;

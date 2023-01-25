@@ -1,3 +1,4 @@
+const consola = require('consola');
 const fs = require('fs');
 const YAML = require('yaml');
 const { YAMLMap } = require('yaml');
@@ -44,7 +45,7 @@ const runSync = (fileSync, dryRun = false) => {
         syncedContents = regexSync(targetFileContents, fileSync);
         break;
       default:
-        return console.log('Unsupported file sync type');
+        return consola.error('Unsupported file sync type');
     }
 
     if (dryRun) {
