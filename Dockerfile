@@ -5,10 +5,10 @@ RUN apt-get update -y && apt-get install -y git
 RUN mkdir /opt/glue_ops
 WORKDIR /opt/glue_ops
 
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn
+RUN npm install
 
 COPY . .
 
-RUN yarn link
+RUN npm link

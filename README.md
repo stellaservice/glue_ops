@@ -25,13 +25,8 @@ Options:
 
 ## Install
 
-Glue_ops is currently published to the Medallia Artifactory virtual NPM repository.  To install via npm/yarn you must:
-1. Authenticate with artifactory (if not presently set)
-https://www.jfrog.com/confluence/display/JFROG/npm+Registry#npmRegistry-AuthenticatingthenpmClient
-2. Install via npm/yarn:
-Ex:
 ```
-npm_config_registry=https://artifactory.eng.medallia.com/api/npm/virtual-npm/ yarn global add glue_ops
+npm install glue_ops
 ```
 
 ## Functionality
@@ -53,8 +48,8 @@ Configuration schema:
 ```
 
 repository:
-  apiBaseUrl: https://github.medallia.com/api/v3 # Required for GH enterprise
-  url: https://github.medallia.com/stellaservice/jenkins-testing # Required for remote repository
+  apiBaseUrl: https://github.enterpriserepo.com/api/v3 # Required for GH enterprise
+  url: https://github.enterpriserepo.com/stellaservice/jenkins-testing # Required for remote repository
   local: true # Can be used to target the current working directory
 
 fileSyncs:

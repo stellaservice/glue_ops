@@ -1,0 +1,35 @@
+name: tags-publish
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yaml
+  publish-image:
+    needs: ci
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: stellaservice
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push image
+        run: |
+          image_name=stellanetops/glue_ops:${{github.ref_name}}
+          docker build -t $image_name .
+          docker push $image_name
+  publish-npm:
+    needs: ci
+    runs-on: ubuntu-20.04
+    container: node:14.17.6-slim
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - name: Publish package
+        run: |
+          npm set registry registry.npmjs.org
+          npm set _auth ${{ secrets.NPM_PUBLISH_TOKEN}}
+          npm publish

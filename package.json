@@ -1,5 +1,6 @@
 {
   "name": "glue_ops",
+  "author": "Steven Goodstein <sgoodstein@medallia.com>",
   "engines": {
     "node": ">=14.17.1"
   },
@@ -7,9 +8,6 @@
     "lint": "eslint src cmds glue_ops.js --ext .js"
   },
   "bin": "./glue_ops.js",
-  "publishConfig": {
-    "registry": "https://artifactory.eng.medallia.com/api/npm/virtual-npm/"
-  },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
     "consola": "^2.15.3",

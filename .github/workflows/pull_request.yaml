@@ -4,15 +4,4 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-20.04
-    container:
-      image: node:14.17.6-stretch
-      options: -u root
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: npm install
-      - name: Lint
-        run: npm run lint
-      - name: Run jest specs
-        run: npx jest
+    uses: ./.github/workflows/ci.yaml
