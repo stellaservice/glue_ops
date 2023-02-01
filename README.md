@@ -51,6 +51,7 @@ repository:
   apiBaseUrl: https://github.enterpriserepo.com/api/v3 # Required for GH enterprise
   url: https://github.enterpriserepo.com/stellaservice/jenkins-testing # Required for remote repository
   local: true # Can be used to target the current working directory
+  cloneDirectory: /tmp/glue_ops_repos # [default]
 
 fileSyncs:
   namedSync:

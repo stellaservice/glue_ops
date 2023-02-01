@@ -1,4 +1,4 @@
-const { Merge } = require('./merge');
+const Merge = require('./merge');
 const Publish = require('./publish');
 
 const Run = async (config, opts) => {

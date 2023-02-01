@@ -3,6 +3,12 @@ const merge = require('deepmerge');
 const YAML = require('yaml');
 const Mustache = require('mustache');
 
+const CONFIGURATION_DEFAULTS = {
+  repository: {
+    cloneDirectory: '/tmp/glue_ops_repos',
+  },
+};
+
 const JOB_CONFIGURATION_DEFAULTS = {
   approval: {
     enabled: true,
@@ -30,6 +36,8 @@ const parseCliReplacements = (replacementValues) => {
 /* eslint-disable no-param-reassign */
 
 const mergeDefaults = (config) => {
+  config = merge(CONFIGURATION_DEFAULTS, config);
+
   if (config.jobs) {
     for (let i = 0; i < config.jobs.length; i++) {
       config.jobs[i] = merge(JOB_CONFIGURATION_DEFAULTS, config.jobs[i]);

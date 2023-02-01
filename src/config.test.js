@@ -26,6 +26,12 @@ describe('loadTemplatedConfiguration', () => {
   });
 
   describe('Merges default values', () => {
+    it('merges config defaults', () => {
+      const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_jobs_standard.yaml`);
+
+      expect(config.repository.cloneDirectory).toBe('/tmp/glue_ops_repos');
+    });
+
     it('merges job defaults', () => {
       const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_jobs_standard.yaml`);
 
