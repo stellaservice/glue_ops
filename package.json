@@ -4,7 +4,7 @@
     "node": ">=14.17.1"
   },
   "scripts": {
-    "lint": "yarn eslint src cmds glue_ops.js --ext .js"
+    "lint": "eslint src cmds glue_ops.js --ext .js"
   },
   "bin": "./glue_ops.js",
   "publishConfig": {
@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
+    "consola": "^2.15.3",
+    "deepmerge": "^4.3.0",
     "jsonpath": "^1.1.1",
     "mustache": "^4.2.0",
     "npm": "^8.5.1",

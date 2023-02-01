@@ -1,7 +1,7 @@
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const { createPr, cleanUpOldPrs } = require('./pr');
-const run = require('./run');
+const Publish = require('./publish');
 const readYamlFile = require('../test/utils/readYamlFile');
 
 jest.mock('simple-git', () => {
@@ -31,7 +31,7 @@ jest.mock('./pr', () => {
   return mPr;
 });
 
-describe('Run', () => {
+describe('Publish', () => {
   const OLD_ENV = process.env;
   const OLD_CWD = process.cwd();
   const config = readYamlFile('test/fixtures/glue_ops_jobs_standard.yaml');
@@ -57,7 +57,7 @@ describe('Run', () => {
   it('checks out a branch, runs syncs, commits and PRs changes', async () => {
     const git = await simpleGit();
 
-    await run(config);
+    await Publish(config);
 
     expect(git.clone).toBeCalledWith(
       `https://ghToken@${repositoryUrl.split('https://').slice(-1)}`,
@@ -91,7 +91,7 @@ describe('Run', () => {
     it('doesn\'t attempt to make any changes', async () => {
       const git = await simpleGit();
 
-      await run(config, { drynRun: true });
+      await Publish(config, { dryRun: true });
 
       expect(git.clone).not.toBeCalled();
       expect(git.fetch).not.toBeCalled();

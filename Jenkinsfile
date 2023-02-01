@@ -25,9 +25,9 @@ pipeline {
       }
 
       steps {
-        sh("yarn")
-        sh("yarn lint")
-        sh("yarn jest")
+        sh("npm install")
+        sh("npm run lint")
+        sh("npx jest")
       }
     }
 
@@ -38,7 +38,8 @@ pipeline {
         sh("docker build -t ${DOCKER_IMAGE}:${TAG_NAME} .")
         sh("docker push ${DOCKER_IMAGE}:${TAG_NAME}")
 
-        sh("yarn publish --registry https://artifactory.eng.medallia.com/api/npm/virtual-npm/")
+        sh("npm config set registry https://artifactory.eng.medallia.com/api/npm/virtual-npm/")
+        sh("npm publish")
       }
     }
   }

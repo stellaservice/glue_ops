@@ -1,17 +1,13 @@
 const loadTemplatedConfiguration = require('../src/config');
+const { commonOptionFlags } = require('./utils');
 
 const templateCommand = {
   command: 'template',
   describe: 'Prints your templated config file to STDOUT for debugging purposes',
-  builder: {
-    'replacement-values': {
-      alias: 'r',
-      describe: 'Used to replace templated values in your config. \n Example option: -r \'image_name=foo\'',
-    },
-  },
+  builder: { 'replacement-values': commonOptionFlags['replacement-values'] },
   handler: (argv) => {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
-    console.log(config);
+    console.log(JSON.stringify(config, null, 2));
   },
 };
 
