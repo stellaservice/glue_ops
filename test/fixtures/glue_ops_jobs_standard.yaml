@@ -1,6 +1,5 @@
 repository:
   url: https://github.test.com/org/testRepo
-  cloneDirectory: '/tmp/glueops'
 
 fileSyncs:
   UpdateWebImage:

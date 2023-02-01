@@ -3,6 +3,7 @@ const simpleGit = require('simple-git');
 const { createPr, cleanUpOldPrs } = require('./pr');
 const Publish = require('./publish');
 const readYamlFile = require('../test/utils/readYamlFile');
+const loadTemplatedConfiguration = require('./config');
 
 jest.mock('simple-git', () => {
   const mGit = jest.requireActual('simple-git')({}, { config: ['user.name="test"', 'user.email="test@test.com"'] });
@@ -11,7 +12,7 @@ jest.mock('simple-git', () => {
     /* eslint-disable global-require */
     const fsExtra = require('fs-extra');
     /* eslint-disable global-require */
-    const testRepoPath = '/tmp/glueops/testRepo';
+    const testRepoPath = '/tmp/glue_ops_repos/testRepo';
     fsExtra.copySync('./test/fixtures/testRepo', testRepoPath);
     fsExtra.moveSync(`${testRepoPath}/.git.fake`, `${testRepoPath}/.git`);
   });
@@ -34,7 +35,7 @@ jest.mock('./pr', () => {
 describe('Publish', () => {
   const OLD_ENV = process.env;
   const OLD_CWD = process.cwd();
-  const config = readYamlFile('test/fixtures/glue_ops_jobs_standard.yaml');
+  const config = loadTemplatedConfiguration('test/fixtures/glue_ops_jobs_standard.yaml');
   const ghToken = 'ghToken';
   const { cloneDirectory, url: repositoryUrl } = config.repository;
   const repoPath = `${cloneDirectory}/${repositoryUrl.split('/').slice(-1)}`;
