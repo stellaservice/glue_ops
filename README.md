@@ -68,7 +68,6 @@ jobs:
     branch: master # Used to branch off of and PR back to
     approval:
       enabled: true # [default]
-      token: {{{approverToken}}} # Needed so that the identity of the PR opener is different than approver
     merge:
       method: 'squash'  # [default] Can be one of: merge, squash, rebase
       pollPrTimeout: 600 # [default] (in seconds)
@@ -76,10 +75,11 @@ jobs:
 
 ## Authentication
 
-For actions (run command) that rely on communicating with Github (cloning, PRing) the CLI relies on the environment variable GITHUB_TOKEN being set with proper scopes.
-This CLI has been tested with a personal access token including the following scopes: `repo, read:org`
+For actions (run/publish/merge command) that rely on communicating with Github (cloning, PRing, merging) the CLI relies on the environment variable: `GITHUB_TOKEN` being set with proper scopes.
 
-*Sync command can be used standalone without GITHUB_TOKEN*
+Additionally for PR approval functionality, typically the PR creator cannot be the PR approver.  To solve this the CLI will opt to use the environment variable `GITHUB_APPROVAL_TOKEN` if available.
+
+This CLI has been tested with a personal access token including the following scopes: `repo, read:org`
 
 ## File Syncs
 
