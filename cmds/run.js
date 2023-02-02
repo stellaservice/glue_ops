@@ -7,7 +7,7 @@ const runCommand = {
   builder: commonOptionFlags,
   handler: (argv) => {
     const config = prepareConfig(argv);
-    Run(config, { dryRun: argv.dryRun });
+    return Run(config, { dryRun: argv.dryRun });
   },
 };
 

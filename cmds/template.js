@@ -7,7 +7,7 @@ const templateCommand = {
   builder: { 'replacement-values': commonOptionFlags['replacement-values'] },
   handler: (argv) => {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
-    console.log(JSON.stringify(config, null, 2));
+    return console.log(JSON.stringify(config, null, 2));
   },
 };
 
