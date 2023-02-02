@@ -89,9 +89,23 @@ describe('Merge', () => {
     expect(approvePr).not.toBeCalled();
   });
 
-  it('Uses modified GH client for approval token', async () => {
-    await Merge(config);
+  describe('when approval token is set', () => {
+    const OldEnv = process.env;
+    const fakeToken = 'test_token';
 
-    expect(GhClient).toHaveBeenNthCalledWith(2, undefined, config.jobs[0].approval.token);
+    beforeEach(() => {
+      jest.resetModules();
+      process.env = { GITHUB_APPROVAL_TOKEN: fakeToken };
+    });
+
+    afterEach(() => {
+      process.env = OldEnv;
+    });
+
+    it('Uses modified GH client for approval token', async () => {
+      await Merge(config);
+
+      expect(GhClient).toHaveBeenNthCalledWith(2, undefined, fakeToken);
+    });
   });
 });

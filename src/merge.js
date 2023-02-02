@@ -23,7 +23,7 @@ const Merge = async (config, opts = { dryRun: false }) => {
     if (job.approval.enabled) {
       consola.info('Approving PR');
       if (opts.dryRun === false) {
-        const approvalGhClient = GhClient(config.repository.apiBaseUrl, job.approval.token);
+        const approvalGhClient = GhClient(config.repository.apiBaseUrl, process.env.GITHUB_APPROVAL_TOKEN);
         await approvePr(approvalGhClient, pr, repositoryUrl);
       }
     }
