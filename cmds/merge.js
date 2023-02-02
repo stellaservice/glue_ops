@@ -7,7 +7,7 @@ const mergeCommand = {
   builder: commonOptionFlags,
   handler: (argv) => {
     const config = prepareConfig(argv);
-    Merge(config, { dryRun: argv.dryRun });
+    return Merge(config, { dryRun: argv.dryRun });
   },
 };
 

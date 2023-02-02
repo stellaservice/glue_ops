@@ -25,14 +25,8 @@ const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
 
   fs.mkdirSync(clonePath, { recursive: true });
   const authRepoUrl = `${repositoryUrl.protocol}//${GITHUB_TOKEN}@${repositoryUrl.host}/${repositoryUrl.pathname}`;
-  let response;
-  try {
-    response = await simpleGit().clone(authRepoUrl, clonePath);
-  } catch (e) {
-    consola.error(e.message);
-    process.exit(1);
-  }
-  return response;
+
+  return simpleGit().clone(authRepoUrl, clonePath);
 };
 
 const configureGit = async (clonePath, dryRun) => {
@@ -87,7 +81,7 @@ const Publish = async (config, opts = { dryRun: false }) => {
     workingDirectory = `${config.repository.cloneDirectory}/${repositoryUrl.name}`;
   }
 
-  initializeRepo(repositoryUrl, workingDirectory, opts.dryRun);
+  await initializeRepo(repositoryUrl, workingDirectory, opts.dryRun);
   const git = await configureGit(workingDirectory, opts.dryRun);
 
   for (let i = 0; i < config.jobs.length; i++) {
