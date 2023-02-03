@@ -27,8 +27,13 @@ yargs
   .command(require('./cmds/template'))
   .option(defaultOptions.configPathOption)
   .demandCommand()
-  .fail((_, error) => {
-    consola.error(error.message);
+  .fail((message, error, yarg) => {
+    if (error) {
+      consola.error(error.message);
+    } else {
+      yarg.showHelp();
+      console.error(`\n ${message}`);
+    }
     process.exit(1);
   })
   .argv;
