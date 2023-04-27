@@ -1,6 +1,7 @@
 const consola = require('consola');
 const GhUrlParser = require('parse-github-url');
 const { GhClient } = require('./utils');
+const MergeHooks = require('./mergeHooks');
 const {
   approvePr, pollStatusCheck, mergePr, findGlueOpsBotPrs,
 } = require('./pr');
@@ -13,12 +14,15 @@ const Merge = async (config, opts = { dryRun: false }) => {
   for (let i = 0; i < config.jobs.length; i++) {
     const job = config.jobs[i];
 
-    const prs = await findGlueOpsBotPrs(ghClient, owner, repo, job.branch, job.name);
-    if (prs.length === 0) {
-      consola.error('No PR found for this job');
-      process.exit(1);
+    let pr;
+    if (opts.dryRun === false) {
+      const prs = await findGlueOpsBotPrs(ghClient, owner, repo, job.branch, job.name);
+      if (prs.length === 0) {
+        consola.error('No PR found for this job');
+        process.exit(1);
+      }
+      [pr] = prs;
     }
-    const pr = prs[0];
 
     if (job.approval.enabled) {
       consola.info('Approving PR');
@@ -39,8 +43,16 @@ const Merge = async (config, opts = { dryRun: false }) => {
     }
 
     consola.info('Merging PR');
+    let mergeResult;
     if (opts.dryRun === false) {
-      await mergePr(ghClient, pr, repositoryUrl, job.merge.method);
+      mergeResult = await mergePr(ghClient, pr, repositoryUrl, job.merge.method);
+    }
+
+    if (job.merge.hooks.length > 0) {
+      consola.info('Running post merge hooks');
+      if (opts.dryRun === false) {
+        MergeHooks(job.merge.hooks, mergeResult.data.sha);
+      }
     }
   }
 };

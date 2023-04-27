@@ -16,6 +16,7 @@ const JOB_CONFIGURATION_DEFAULTS = {
   merge: {
     method: 'squash',
     pollPrTimeout: 600,
+    hooks: [],
   },
 };
 /* eslint-disable no-param-reassign */
