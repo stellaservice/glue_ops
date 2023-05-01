@@ -66,8 +66,12 @@ const runFilesyncs = (config, job, workingDirectory, dryRun) => {
     consola.info(`Running file sync: ${sync}`);
 
     if (!dryRun) {
+      const cwd = process.cwd();
+
       process.chdir(workingDirectory);
       runSync(config.fileSyncs[sync]);
+
+      process.chdir(cwd);
     }
   });
 };
