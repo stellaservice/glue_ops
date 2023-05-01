@@ -2,7 +2,7 @@
   "name": "glue_ops",
   "author": "Steven Goodstein <sgoodstein@medallia.com>",
   "engines": {
-    "node": ">=14.17.1"
+    "node": ">=18.16.0"
   },
   "scripts": {
     "lint": "eslint src cmds glue_ops.js --ext .js"

@@ -1,6 +1,7 @@
-FROM node:14.17.6-slim
+FROM node:18.16.0-slim
 
-RUN apt-get update -y && apt-get install -y git
+RUN apt-get update -y \
+  && apt-get install -y git curl jq
 
 RUN mkdir /opt/glue_ops
 WORKDIR /opt/glue_ops

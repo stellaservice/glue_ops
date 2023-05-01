@@ -1,6 +1,7 @@
 const GhUrlParser = require('parse-github-url');
 const loadTemplatedConfiguration = require('./config');
 const Merge = require('./merge');
+const MergeHooks = require('./mergeHooks');
 const { GhClient } = require('./utils');
 const {
   approvePr, pollStatusCheck, mergePr, findGlueOpsBotPrs,
@@ -9,7 +10,7 @@ const {
 jest.mock('./pr', () => {
   const approveMock = jest.fn();
   const pollStatusMock = jest.fn(() => (true));
-  const mergeMock = jest.fn();
+  const mergeMock = jest.fn(() => ({ status: 200, data: { sha: 'fakeSha' } }));
   const findPrMock = jest.fn(() => ([{ number: 1 }]));
 
   return {
@@ -20,6 +21,8 @@ jest.mock('./pr', () => {
     findGlueOpsBotPrs: findPrMock,
   };
 });
+
+jest.mock('./mergeHooks', () => (jest.fn()));
 
 jest.mock('./utils', () => (
   {
@@ -35,7 +38,7 @@ describe('Merge', () => {
 
   const config = loadTemplatedConfiguration('test/fixtures/glue_ops_jobs_merge.yaml');
 
-  it('calls for pr approval, poll status, and merge', async () => {
+  it('calls for pr approval, poll status, merge, and mergeHooks', async () => {
     const repositoryUrl = new GhUrlParser(config.repository.url);
     const ghClient = GhClient();
 
@@ -67,6 +70,10 @@ describe('Merge', () => {
       repositoryUrl,
       config.jobs[0].merge.method,
     );
+    expect(MergeHooks).toBeCalledWith(
+      config.jobs[0].merge.hooks,
+      'fakeSha',
+    );
   });
 
   it('doesn\'t call pr functions when dry run enabled', async () => {
@@ -75,6 +82,7 @@ describe('Merge', () => {
     expect(pollStatusCheck).not.toBeCalled();
     expect(approvePr).not.toBeCalled();
     expect(mergePr).not.toBeCalled();
+    expect(MergeHooks).not.toBeCalled();
   });
 
   it('doesn\'t call approval when disabled', async () => {
@@ -87,6 +95,7 @@ describe('Merge', () => {
     expect(pollStatusCheck).toBeCalled();
     expect(mergePr).toBeCalled();
     expect(approvePr).not.toBeCalled();
+    expect(MergeHooks).toBeCalled();
   });
 
   describe('when approval token is set', () => {

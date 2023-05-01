@@ -71,6 +71,7 @@ jobs:
     merge:
       method: 'squash'  # [default] Can be one of: merge, squash, rebase
       pollPrTimeout: 600 # [default] (in seconds)
+      hooks: [] # Arbitrary shell command hooks to be run post merge
 ```
 
 ## Authentication
@@ -85,6 +86,10 @@ This CLI has been tested with a personal access token including the following sc
 
 File syncs helps you automate changes to a file or group of files.  It currently supports targeting changes via YAML, JSON, and Regex. It can be used as part of a job which would include the branching and PR automation or completely independently ony requiring the `fileSyncs` configuration in your `glue_ops.yaml`
 
+## Merge hooks
+
+Merge hooks allows you to run arbitrary scripts post merge. This can be useful for monitoring changes to your infrastructure post merge. Additionally the environment will include: MERGE_SHA variable allowing you to associate an action with the current merge commit.
+
 ## Run command
 
 The run command automates the entire process of publish/merge as a single call.  It implements the following steps:
@@ -97,3 +102,4 @@ The run command automates the entire process of publish/merge as a single call. 
 7. Approves PR (w/ alternative token) *[merge]*
 8. Polls PR status *[merge]*
 9. Merges PR *[merge]*
+10. Runs merge hooks if applicable *[merge]*
