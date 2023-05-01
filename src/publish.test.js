@@ -45,11 +45,11 @@ describe('Publish', () => {
 
   beforeEach(() => {
     process.env = { GITHUB_TOKEN: ghToken };
-    fs.rmdirSync(cloneDirectory, { recursive: true });
+    fs.rmSync(cloneDirectory, { recursive: true, force: true });
   });
 
   afterEach(() => {
-    fs.rmdirSync(cloneDirectory, { recursive: true });
+    fs.rmSync(cloneDirectory, { recursive: true, force: true });
     jest.clearAllMocks();
     process.env = OLD_ENV;
     process.chdir(OLD_CWD);
