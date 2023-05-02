@@ -6,7 +6,7 @@ jobs:
   ci:
     runs-on: ubuntu-20.04
     container:
-      image: node:14.17.6-stretch
+      image: node:18.16.0-buster
       options: -u root
     steps:
       - uses: actions/checkout@v3

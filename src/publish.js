@@ -61,17 +61,24 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
     .push('origin', prBranchName);
 };
 
+const runInDirectory = (directory, callback) => {
+  const cwd = process.cwd();
+
+  process.chdir(directory);
+
+  callback();
+
+  process.chdir(cwd);
+};
+
 const runFilesyncs = (config, job, workingDirectory, dryRun) => {
   job.fileSyncs.forEach((sync) => {
     consola.info(`Running file sync: ${sync}`);
 
     if (!dryRun) {
-      const cwd = process.cwd();
-
-      process.chdir(workingDirectory);
-      runSync(config.fileSyncs[sync]);
-
-      process.chdir(cwd);
+      runInDirectory(workingDirectory, () => {
+        runSync(config.fileSyncs[sync]);
+      });
     }
   });
 };
