@@ -1,3 +1,5 @@
+import { ConfigurationType } from './commonTypes';
+
 const fs = require('fs');
 const merge = require('deepmerge');
 const YAML = require('yaml');
@@ -36,7 +38,7 @@ const parseCliReplacements = (replacementValues) => {
 };
 /* eslint-disable no-param-reassign */
 
-const mergeDefaults = (config) => {
+const mergeDefaults = (config: ConfigurationType) => {
   config = merge(CONFIGURATION_DEFAULTS, config);
 
   if (config.jobs) {
@@ -47,7 +49,7 @@ const mergeDefaults = (config) => {
   return config;
 };
 
-const loadTemplatedConfiguration = (configPath, replacementValues = '') => {
+const loadTemplatedConfiguration = (configPath: string, replacementValues = ''): ConfigurationType => {
   const file = fs.readFileSync(configPath, 'utf-8');
   const templateValues = parseCliReplacements(replacementValues);
   const templatedConfig = Mustache.render(file.toString(), templateValues);
@@ -56,4 +58,4 @@ const loadTemplatedConfiguration = (configPath, replacementValues = '') => {
   return mergeDefaults(parsedConfig);
 };
 
-module.exports = loadTemplatedConfiguration;
+export default loadTemplatedConfiguration;

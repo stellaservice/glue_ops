@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+  },
+  "include": ["./glue_ops.ts", "./cmds/**/*", "./src/**/*", "./test/**/*.js", ".eslintrc.js"],
+}

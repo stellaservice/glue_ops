@@ -1,5 +1,6 @@
+import MergeHooks from './mergeHooks';
+
 const { readFileSync, rmSync } = require('fs');
-const MergeHooks = require('./mergeHooks');
 
 describe('MergeHooks', () => {
   const testPath = '/tmp/mergeHookTest.txt';

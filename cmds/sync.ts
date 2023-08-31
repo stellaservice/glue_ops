@@ -1,13 +1,14 @@
+import loadTemplatedConfiguration from '../src/config';
+import { runAllSyncs, runSync } from '../src/sync';
+import { commonOptionFlags, CommonArgv } from './utils';
+
 const consola = require('consola');
-const { runAllSyncs, runSync } = require('../src/sync');
-const { commonOptionFlags } = require('./utils');
-const loadTemplatedConfiguration = require('../src/config');
 
 const syncCommand = {
   command: 'sync [syncName]',
   describe: 'Applies your file syncs',
   builder: commonOptionFlags,
-  handler: (argv) => {
+  handler: (argv: CommonArgv) => {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
     if (argv.syncName) {
       if (config.fileSyncs[argv.syncName]) {
@@ -21,4 +22,4 @@ const syncCommand = {
   },
 };
 
-module.exports = syncCommand;
+export default syncCommand;

@@ -1,7 +1,7 @@
 const consola = require('consola');
 const { execSync } = require('child_process');
 
-const MergeHooks = (hooks, sha) => {
+const MergeHooks = (hooks: string[], sha: string) => {
   for (let i = 0; i < hooks.length; i++) {
     const hook = hooks[i];
 
@@ -10,4 +10,4 @@ const MergeHooks = (hooks, sha) => {
   }
 };
 
-module.exports = MergeHooks;
+export default MergeHooks;

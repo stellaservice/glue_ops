@@ -1,14 +1,15 @@
+import { runSync } from './sync';
+import { createPr, cleanUpOldPrs } from './pr';
+import { ConfigurationType, CommandOptions } from './commonTypes';
+
 const consola = require('consola');
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const uuid = require('uuid');
 const GhUrlParser = require('parse-github-url');
 
-const { runSync } = require('./sync');
-const { createPr, cleanUpOldPrs } = require('./pr');
-
 const emptyPromise = () => (
-  new Promise((resolve) => { resolve(); })
+  new Promise((resolve) => { resolve(undefined); })
 );
 
 const initializeRepo = async (repositoryUrl, clonePath, dryRun) => {
@@ -41,7 +42,7 @@ const configureGit = async (clonePath, dryRun) => {
 const checkoutBranch = ({ git, job, prBranchName }, dryRun = false) => {
   consola.info(`Checking out branch ${prBranchName} from ${job.branch}`);
 
-  if (dryRun) return new Promise((resolve) => { resolve(); });
+  if (dryRun) return new Promise((resolve) => { resolve(undefined); });
 
   return git
     .checkout(job.branch)
@@ -53,7 +54,7 @@ const checkoutBranch = ({ git, job, prBranchName }, dryRun = false) => {
 const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false) => {
   consola.info(`Commiting: '${commitMessage}'\nPushing: ${prBranchName}`);
 
-  if (dryRun) return new Promise((resolve) => { resolve(); });
+  if (dryRun) return new Promise((resolve) => { resolve(undefined); });
 
   return git
     .add('.')
@@ -83,7 +84,7 @@ const runFilesyncs = (config, job, workingDirectory, dryRun) => {
   });
 };
 
-const Publish = async (config, opts = { dryRun: false }) => {
+const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRun: false }) => {
   const repositoryUrl = new GhUrlParser(config.repository.url);
 
   let workingDirectory = process.cwd();
@@ -125,4 +126,4 @@ const Publish = async (config, opts = { dryRun: false }) => {
   }
 };
 
-module.exports = Publish;
+export default Publish;

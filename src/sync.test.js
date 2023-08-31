@@ -1,6 +1,7 @@
+import { runSync, runAllSyncs } from './sync';
+
 const fs = require('fs-extra');
 const readYamlFile = require('../test/utils/readYamlFile');
-const { runSync, runAllSyncs } = require('./sync');
 
 describe('run', () => {
   const fixturePath = 'test/fixtures';

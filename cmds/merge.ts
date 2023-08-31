@@ -1,14 +1,15 @@
-const { commonOptionFlags, prepareConfig } = require('./utils');
-const { Merge } = require('../src/merge');
+import Merge from '../src/merge';
+
+import { commonOptionFlags, prepareConfig, CommonArgv } from './utils';
 
 const mergeCommand = {
   command: 'merge [jobName]',
   describe: 'Merges PRs opened by GlueOps',
   builder: commonOptionFlags,
-  handler: (argv) => {
+  handler: (argv: CommonArgv) => {
     const config = prepareConfig(argv);
     return Merge(config, { dryRun: argv.dryRun });
   },
 };
 
-module.exports = mergeCommand;
+export default mergeCommand;

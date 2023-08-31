@@ -1,22 +1,36 @@
+import { RestGhClient as GhClient } from './utils';
+import { ConfigurationType, CommandOptions } from './commonTypes';
+import {
+  approvePr, pollStatusCheck, mergePr, findGlueOpsBotPrs,
+} from './pr';
+import MergeHooks from './mergeHooks';
+import { ROLLBACK_LABEL } from './rollbackPublish';
+
 const consola = require('consola');
 const GhUrlParser = require('parse-github-url');
-const { GhClient } = require('./utils');
-const MergeHooks = require('./mergeHooks');
-const {
-  approvePr, pollStatusCheck, mergePr, findGlueOpsBotPrs,
-} = require('./pr');
 
-const Merge = async (config, opts = { dryRun: false }) => {
+const Merge = async (
+  config: ConfigurationType,
+  commandOpts: CommandOptions = { dryRun: false },
+  mergeOpts: { rollback: boolean } = { rollback: false },
+) => {
   const repositoryUrl = new GhUrlParser(config.repository.url);
   const { owner, name: repo } = repositoryUrl;
-  const ghClient = GhClient(config.repository.apiBaseUrl);
+  const ghClient = GhClient({ apiBaseUrl: config.repository.apiBaseUrl });
 
   for (let i = 0; i < config.jobs.length; i++) {
     const job = config.jobs[i];
 
     let pr;
-    if (opts.dryRun === false) {
-      const prs = await findGlueOpsBotPrs(ghClient, owner, repo, job.branch, job.name);
+    if (commandOpts.dryRun === false) {
+      const prs = await findGlueOpsBotPrs({
+        ghClient,
+        owner,
+        repo,
+        base: job.branch,
+        jobName: job.name,
+        additionalLabelsFilters: mergeOpts.rollback === true ? [ROLLBACK_LABEL] : [],
+      });
       if (prs.length === 0) {
         consola.error('No PR found for this job');
         process.exit(1);
@@ -26,14 +40,14 @@ const Merge = async (config, opts = { dryRun: false }) => {
 
     if (job.approval.enabled) {
       consola.info('Approving PR');
-      if (opts.dryRun === false) {
-        const approvalGhClient = GhClient(config.repository.apiBaseUrl, process.env.GITHUB_APPROVAL_TOKEN);
+      if (commandOpts.dryRun === false) {
+        const approvalGhClient = GhClient({ apiBaseUrl: config.repository.apiBaseUrl, token: process.env.GITHUB_APPROVAL_TOKEN });
         await approvePr(approvalGhClient, pr, repositoryUrl);
       }
     }
 
     consola.info('Waiting for PR mergability');
-    if (opts.dryRun === false) {
+    if (commandOpts.dryRun === false) {
       const pollResult = await pollStatusCheck(ghClient, pr, repositoryUrl, job.merge.pollPrTimeout);
 
       if (pollResult === false) {
@@ -44,17 +58,17 @@ const Merge = async (config, opts = { dryRun: false }) => {
 
     consola.info('Merging PR');
     let mergeResult;
-    if (opts.dryRun === false) {
+    if (commandOpts.dryRun === false) {
       mergeResult = await mergePr(ghClient, pr, repositoryUrl, job.merge.method);
     }
 
     if (job.merge.hooks.length > 0) {
       consola.info('Running post merge hooks');
-      if (opts.dryRun === false) {
+      if (commandOpts.dryRun === false) {
         MergeHooks(job.merge.hooks, mergeResult.data.sha);
       }
     }
   }
 };
 
-module.exports = Merge;
+export default Merge;

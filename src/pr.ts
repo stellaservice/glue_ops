@@ -1,13 +1,18 @@
+import type { GraphQlQueryResponseData } from '@octokit/graphql';
+import type { Octokit as OctokitRest } from '@octokit/rest';
+import { graphql } from '@octokit/graphql';
+import type { Job } from './commonTypes';
+import { RestGhClient as GhClient } from './utils';
+
 const consola = require('consola');
 const LinkHeader = require('parse-link-header');
-const { GhClient } = require('./utils');
 
 const GLUE_OPS_BOT_LABEL = 'GlueOpsBot';
 
-const createPr = async ({
+export const createPr = async ({
   title, owner, repo, head, base, jobName, apiBaseUrl,
 }) => {
-  const gh = GhClient(apiBaseUrl);
+  const gh = GhClient({ apiBaseUrl });
 
   let pr;
   try {
@@ -30,14 +35,36 @@ const createPr = async ({
   return pr;
 };
 
-const findGlueOpsBotPrs = async (ghClient, owner, repo, base, jobName) => {
+interface FindGlueOpsBotPrsOptions {
+  ghClient: OctokitRest
+  owner: string
+  repo: string
+  base: string
+  jobName: string
+  state?: 'open' | 'closed' | 'all'
+  sort?: 'created' | 'updated' | 'popularity' | 'long-running'
+  paginate?: boolean
+  additionalLabelsFilters?: string[]
+}
+
+export const findGlueOpsBotPrs = async ({
+  ghClient,
+  owner,
+  repo,
+  base,
+  jobName,
+  state = 'open',
+  sort = 'created',
+  paginate = true,
+  additionalLabelsFilters = [],
+}: FindGlueOpsBotPrsOptions) => {
   const prParams = {
     owner,
     repo,
-    state: 'open',
+    state,
     base,
-    sort: 'created',
-    direction: 'desc',
+    sort,
+    direction: <'desc' | 'asc'>'desc',
     per_page: 50,
   };
 
@@ -51,7 +78,7 @@ const findGlueOpsBotPrs = async (ghClient, owner, repo, base, jobName) => {
   let prData = prs.data;
   let link = LinkHeader(prs.headers.link);
 
-  if (link) {
+  if (link && paginate === true) {
     while (link.next) {
       try {
         prs = await ghClient.rest.pulls.list({ page: link.next.page, ...prParams });
@@ -66,7 +93,7 @@ const findGlueOpsBotPrs = async (ghClient, owner, repo, base, jobName) => {
 
   const botPrs = prData.filter((pr) => {
     const labelNames = pr.labels.map((label) => label.name);
-    const labels = [GLUE_OPS_BOT_LABEL, jobName];
+    const labels = [GLUE_OPS_BOT_LABEL, jobName].concat(additionalLabelsFilters);
 
     return labels.every((label) => labelNames.includes(label));
   });
@@ -74,13 +101,15 @@ const findGlueOpsBotPrs = async (ghClient, owner, repo, base, jobName) => {
   return botPrs;
 };
 
-const cleanUpOldPrs = async ({
+export const cleanUpOldPrs = async ({
   owner, repo, base, jobName, newPrNumber, apiBaseUrl,
 }) => {
-  const ghClient = GhClient(apiBaseUrl);
+  const ghClient = GhClient({ apiBaseUrl });
 
   // Get all bot PRs filtering the newly opened PR
-  const botPrs = await findGlueOpsBotPrs(ghClient, owner, repo, base, jobName);
+  const botPrs = await findGlueOpsBotPrs({
+    ghClient, owner, repo, base, jobName,
+  });
   const oldPrs = botPrs.filter((pr) => pr.number !== newPrNumber);
 
   for (let i = 0; i < oldPrs.length; i++) {
@@ -112,7 +141,7 @@ const dateEpochSeconds = () => (
   Math.floor(Date.now() / 1000)
 );
 
-const approvePr = async (ghClient, pr, repositoryUrl) => {
+export const approvePr = async (ghClient: OctokitRest, pr: { number: number }, repositoryUrl: RepositoryUrlType) => {
   const { owner, name: repo } = repositoryUrl;
 
   try {
@@ -130,7 +159,7 @@ const approvePr = async (ghClient, pr, repositoryUrl) => {
   }
 };
 
-const pollStatusCheck = async (ghClient, pr, repositoryUrl, timeout) => {
+export const pollStatusCheck = async (ghClient: OctokitRest, pr, repositoryUrl: RepositoryUrlType, timeout: number) => {
   const { owner, name: repo } = repositoryUrl;
   const startPollTime = dateEpochSeconds();
 
@@ -151,7 +180,12 @@ const pollStatusCheck = async (ghClient, pr, repositoryUrl, timeout) => {
   }
 };
 
-const mergePr = async (ghClient, pr, repositoryUrl, mergeMethod) => {
+export const mergePr = async (
+  ghClient: OctokitRest,
+  pr: { number: number },
+  repositoryUrl: RepositoryUrlType,
+  mergeMethod: 'merge' | 'squash' | 'rebase',
+) => {
   const { owner, name: repo } = repositoryUrl;
 
   try {
@@ -169,6 +203,50 @@ const mergePr = async (ghClient, pr, repositoryUrl, mergeMethod) => {
   }
 };
 
-module.exports = {
-  createPr, cleanUpOldPrs, approvePr, mergePr, pollStatusCheck, findGlueOpsBotPrs,
+export const revertPr = async (ghGraphQlClient: typeof graphql, pullRequestId: string): Promise<GraphQlQueryResponseData> => {
+  const response: GraphQlQueryResponseData = await ghGraphQlClient({
+    query: `mutation revertPR($input: RevertPullRequestInput!) {
+                 revertPullRequest(input: $input) {
+                   revertPullRequest {
+                     id
+                     url
+                     number
+                   }
+                 }
+               }
+    `,
+    input: { pullRequestId },
+  });
+
+  return response;
 };
+
+interface RepositoryUrlType {
+  owner: string
+  name: string
+  href: string
+}
+
+interface AddLabelsInput {
+  ghClient: OctokitRest
+  repositoryUrl: RepositoryUrlType
+  prNumber: number
+  job: Job
+  additionalLabels?: string[]
+}
+
+export const addLabelsToPr = async ({
+  ghClient,
+  repositoryUrl,
+  prNumber,
+  job,
+  additionalLabels = [],
+}: AddLabelsInput) => (
+
+  ghClient.rest.issues.addLabels({
+    owner: repositoryUrl.owner,
+    repo: repositoryUrl.name,
+    issue_number: prNumber,
+    labels: [GLUE_OPS_BOT_LABEL, job.name].concat(additionalLabels),
+  })
+);
