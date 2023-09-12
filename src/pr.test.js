@@ -1,10 +1,17 @@
+import { RestGhClient as GhClient, GraphqlGhClient } from './utils';
+import {
+  createPr,
+  cleanUpOldPrs,
+  pollStatusCheck,
+  approvePr,
+  mergePr,
+  findGlueOpsBotPrs,
+  revertPr,
+  addLabelsToPr,
+} from './pr';
+
 const GhUrlParser = require('parse-github-url');
 const pollyContext = require('../test/setup/setup_api_recording');
-const { GhClient } = require('./utils');
-
-const {
-  createPr, cleanUpOldPrs, pollStatusCheck, approvePr, mergePr, findGlueOpsBotPrs,
-} = require('./pr');
 
 describe('PR', () => {
   beforeEach(() => {
@@ -103,9 +110,85 @@ describe('PR', () => {
   describe('findGlueOpsBotPrs', () => {
     it('returns an array of botPrs', async () => {
       const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
-      const result = await findGlueOpsBotPrs(GhClient(), repositoryUrl.owner, repositoryUrl.name, 'main', 'TestJob');
+      const result = await findGlueOpsBotPrs({
+        ghClient: GhClient(),
+        owner: repositoryUrl.owner,
+        repo: repositoryUrl.name,
+        base: 'main',
+        jobName: 'TestJob',
+      });
 
       expect(result[0].number).toBe(2);
+    });
+
+    it('can return latest closed PRs', async () => {
+      const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+      const result = await findGlueOpsBotPrs({
+        ghClient: GhClient(),
+        owner: repositoryUrl.owner,
+        repo: repositoryUrl.name,
+        base: 'main',
+        jobName: 'TestJob',
+        state: 'closed',
+        sort: 'updated',
+        paginate: false,
+      });
+
+      expect(result[0].number).toBe(11);
+    });
+
+    it('can return PRs with additional labels', async () => {
+      const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+      const result = await findGlueOpsBotPrs({
+        ghClient: GhClient(),
+        owner: repositoryUrl.owner,
+        repo: repositoryUrl.name,
+        base: 'main',
+        jobName: 'TestJob',
+        additionalLabelsFilters: ['ExtraLabel'],
+      });
+
+      expect(result[0].number).toBe(17);
+    });
+  });
+
+  describe('revertPr', () => {
+    it('creates a revert PR based on the pr id', async () => {
+      const prId = 'PR_kwDOI2MKRc5PhoP1';
+      const response = await revertPr(GraphqlGhClient(), prId);
+      const { url, number } = response.revertPullRequest.revertPullRequest;
+
+      expect(url).toBe('https://github.com/stellaservice/glueops-test-repo/pull/17');
+      expect(number).toBe(17);
+    });
+  });
+
+  describe('addLabelsToPr', () => {
+    it('can add labels', async () => {
+      const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+
+      const response = await addLabelsToPr({
+        ghClient: GhClient(),
+        repositoryUrl,
+        prNumber: 17,
+        job: { name: 'TestJob' },
+      });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('can add additional labels', async () => {
+      const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
+
+      const response = await addLabelsToPr({
+        ghClient: GhClient(),
+        repositoryUrl,
+        prNumber: 17,
+        job: { name: 'TestJob' },
+        additionalLabels: ['ExtraLabel'],
+      });
+
+      expect(response.status).toBe(200);
     });
   });
 });

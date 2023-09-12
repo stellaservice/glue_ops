@@ -1,11 +1,13 @@
-const GhUrlParser = require('parse-github-url');
-const loadTemplatedConfiguration = require('./config');
-const Merge = require('./merge');
-const MergeHooks = require('./mergeHooks');
-const { GhClient } = require('./utils');
-const {
+import loadTemplatedConfiguration from './config';
+import MergeHooks from './mergeHooks';
+import Merge from './merge';
+import { RestGhClient as GhClient } from './utils';
+import {
   approvePr, pollStatusCheck, mergePr, findGlueOpsBotPrs,
-} = require('./pr');
+} from './pr';
+import { ROLLBACK_LABEL } from './rollbackPublish';
+
+const GhUrlParser = require('parse-github-url');
 
 jest.mock('./pr', () => {
   const approveMock = jest.fn();
@@ -22,12 +24,12 @@ jest.mock('./pr', () => {
   };
 });
 
-jest.mock('./mergeHooks', () => (jest.fn()));
+jest.mock('./mergeHooks', () => ({ default: jest.fn() }));
 
 jest.mock('./utils', () => (
   {
     __esModule: true,
-    GhClient: jest.fn(() => ('client')),
+    RestGhClient: jest.fn(() => ('client')),
   }
 ));
 
@@ -44,13 +46,14 @@ describe('Merge', () => {
 
     await Merge(config);
 
-    expect(findGlueOpsBotPrs).toBeCalledWith(
+    expect(findGlueOpsBotPrs).toBeCalledWith({
       ghClient,
-      repositoryUrl.owner,
-      repositoryUrl.name,
-      config.jobs[0].branch,
-      config.jobs[0].name,
-    );
+      owner: repositoryUrl.owner,
+      repo: repositoryUrl.name,
+      base: config.jobs[0].branch,
+      jobName: config.jobs[0].name,
+      additionalLabelsFilters: [],
+    });
 
     const pr = findGlueOpsBotPrs()[0];
     expect(pollStatusCheck).toBeCalledWith(
@@ -74,6 +77,22 @@ describe('Merge', () => {
       config.jobs[0].merge.hooks,
       'fakeSha',
     );
+  });
+
+  it('finds glue ops PRs with rollback label', async () => {
+    const repositoryUrl = new GhUrlParser(config.repository.url);
+    const ghClient = GhClient();
+
+    await Merge(config, undefined, { rollback: true });
+
+    expect(findGlueOpsBotPrs).toBeCalledWith({
+      ghClient,
+      owner: repositoryUrl.owner,
+      repo: repositoryUrl.name,
+      base: config.jobs[0].branch,
+      jobName: config.jobs[0].name,
+      additionalLabelsFilters: [ROLLBACK_LABEL],
+    });
   });
 
   it('doesn\'t call pr functions when dry run enabled', async () => {
@@ -114,7 +133,10 @@ describe('Merge', () => {
     it('Uses modified GH client for approval token', async () => {
       await Merge(config);
 
-      expect(GhClient).toHaveBeenNthCalledWith(2, undefined, fakeToken);
+      expect(GhClient).toHaveBeenNthCalledWith(
+        2,
+        { apiBaseUrl: config.repository.apiBaseUrl, token: fakeToken },
+      );
     });
   });
 });

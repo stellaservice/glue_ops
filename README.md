@@ -10,12 +10,15 @@ glue_ops <cmd> [args]
 The glue for GitOps
 
 Commands:
-  glue_ops run [jobName]      Runs publish and merge
-  glue_ops publish [jobName]  Applies file syncs and publishes to repository
-  glue_ops merge [jobName]    Merges PRs opened by GlueOps
-  glue_ops sync [syncName]    Applies your file syncs
-  glue_ops template           Prints your templated config file to STDOUT for
-                              debugging purposes
+  glue_ops run [jobName]              Runs publish and merge
+  glue_ops publish [jobName]          Applies file syncs and publishes to
+                                      repository
+  glue_ops merge [jobName]            Merges PRs opened by GlueOps
+  glue_ops rollback [jobName]         Runs rollbackPublish and merges PRs
+  glue_ops rollbackPublish [jobName]  Creates rollback PRs
+  glue_ops sync [syncName]            Applies your file syncs
+  glue_ops template                   Prints your templated config file to
+                                      STDOUT for debugging purposes
 
 Options:
       --help         Show help                                         [boolean]
@@ -35,6 +38,7 @@ Glue Ops automates GitOps by:
 1. Helping you automate changes to a file or group of files. *Command: [sync]*
 2. Helping you automate the process of cloning, branching, committing, PRing changes and cleaning up old PRs. *Command: [publish]*
 3. Helping you automate the process of waiting for PR status checks to pass, approve the PR and merge the PR. *Command: [merge]*
+4. Helping you automate the process of rolling back your previous PR. *Command: [rollbackPublish]*
 
 ## Configuration:
 glue_ops requires a configuration file (default glue_ops.yaml) to run.  It allows dynamic values via mustache templating.  Template values must be provided via the CLI with the `-r, --replacement-values` flag.  For multiple replacement values, use the flag multiple times.

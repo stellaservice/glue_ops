@@ -1,9 +1,10 @@
+import loadTemplatedConfiguration from './config';
+import Publish from './publish';
+
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const { createPr, cleanUpOldPrs } = require('./pr');
-const Publish = require('./publish');
 const readYamlFile = require('../test/utils/readYamlFile');
-const loadTemplatedConfiguration = require('./config');
 
 jest.mock('simple-git', () => {
   const mGit = jest.requireActual('simple-git')({}, { config: ['user.name="test"', 'user.email="test@test.com"'] });

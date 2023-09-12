@@ -1,4 +1,4 @@
-const loadTemplatedConfiguration = require('./config');
+import loadTemplatedConfiguration from './config';
 
 describe('loadTemplatedConfiguration', () => {
   const fixturePath = 'test/fixtures';

@@ -7,9 +7,11 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'airbnb-typescript',
   ],
   parserOptions: {
     ecmaVersion: 'latest',
+    project: './tsconfig.json',
   },
   plugins: ['jest'],
   rules: {
@@ -24,5 +26,11 @@ module.exports = {
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
     'jest/valid-expect': 'error',
+    'react/jsx-filename-extension': [0],
+  },
+  settings: {
+    'import/resolver': {
+      typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
+    },
   },
 };

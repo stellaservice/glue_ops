@@ -1,7 +1,20 @@
-const consola = require('consola');
-const loadTemplatedConfiguration = require('../src/config');
+import loadTemplatedConfiguration from '../src/config';
+import { ConfigurationType } from '../src/commonTypes';
 
-const commonOptionFlags = {
+const consola = require('consola');
+
+export const DefaultOptions = {
+  configPathOption: {
+    'config-path': {
+      alias: 'c',
+      type: 'string',
+      default: 'glue_ops.yaml',
+      description: 'Sets the config path',
+    },
+  },
+};
+
+export const commonOptionFlags = {
   'replacement-values': {
     alias: 'r',
     describe: 'Used to replace templated values in your config. \n Example option: -r \'image_name=foo\'',
@@ -13,8 +26,17 @@ const commonOptionFlags = {
   },
 };
 
-const prepareConfig = (argv) => {
+export interface CommonArgv {
+  configPath: string
+  replacementValues?: string
+  dryRun: boolean
+  jobName?: string
+  syncName?: string
+}
+
+export const prepareConfig = (argv: CommonArgv): ConfigurationType => {
   const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
+
   if (argv.jobName) {
     const filteredJob = config.jobs.filter((job) => (job.name === argv.jobName));
     if (filteredJob.length > 0) {
@@ -27,5 +49,3 @@ const prepareConfig = (argv) => {
 
   return config;
 };
-
-module.exports = { commonOptionFlags, prepareConfig };

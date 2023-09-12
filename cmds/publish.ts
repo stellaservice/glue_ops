@@ -1,14 +1,14 @@
-const { commonOptionFlags, prepareConfig } = require('./utils');
-const Publish = require('../src/publish');
+import { commonOptionFlags, prepareConfig, CommonArgv } from './utils';
+import Publish from '../src/publish';
 
-const runCommand = {
+const publishCommand = {
   command: 'publish [jobName]',
   describe: 'Applies file syncs and publishes to repository',
   builder: commonOptionFlags,
-  handler: (argv) => {
+  handler: (argv: CommonArgv) => {
     const config = prepareConfig(argv);
     return Publish(config, { dryRun: argv.dryRun });
   },
 };
 
-module.exports = runCommand;
+export default publishCommand;

@@ -1,14 +1,11 @@
-const { Polly } = require('@pollyjs/core');
 const { setupPolly } = require('setup-polly-jest');
 const NodeHttpAdapter = require('@pollyjs/adapter-node-http');
+const FetchAdapter = require('@pollyjs/adapter-fetch'); // Needed with node18 builtin global fetch
 const FSPersister = require('@pollyjs/persister-fs');
 
-Polly.register(NodeHttpAdapter);
-Polly.register(FSPersister);
-
 module.exports = setupPolly({
-  adapters: ['node-http'],
-  persister: 'fs',
+  adapters: [NodeHttpAdapter, FetchAdapter],
+  persister: FSPersister,
   persisterOptions: {
     fs: {
       recordingsDir: 'test/recordings',
@@ -18,4 +15,5 @@ module.exports = setupPolly({
   matchRequestsBy: {
     headers: false,
   },
+  recordIfMissing: true
 });
