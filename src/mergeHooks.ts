@@ -6,7 +6,7 @@ const MergeHooks = (hooks: string[], sha: string) => {
     const hook = hooks[i];
 
     consola.info(`Running: ${hook}`);
-    execSync(hook, { env: { MERGE_SHA: sha }, stdio: 'inherit' });
+    execSync(hook, { env: { ...process.env, MERGE_SHA: sha }, stdio: 'inherit' });
   }
 };
 
