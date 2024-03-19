@@ -4,26 +4,32 @@ const consola = require('consola');
 const fs = require('fs');
 const YAML = require('yaml');
 const { YAMLMap } = require('yaml');
-const jp = require('jsonpath');
 
 Object.getPrototypeOf(YAMLMap).maxFlowStringSingleLineLength = 10000; // Stops yaml collections from wrapping
+
+const setValueOnPath = (obj: any, path: string[], value: any) => {
+  const last = path.pop();
+  const parent = path.reduce((accum, p) => (accum[p]), obj);
+  parent[last] = value;
+};
 
 const jsonSync = (targetFileContents: string, fileSync: FileSyncType) => {
   const contents = JSON.parse(targetFileContents);
 
   const target = <string[]>fileSync.target;
-  const jsonPath = target.map((i) => `['${i}']`).join('');
-  jp.apply(contents, `$${jsonPath}`, () => fileSync.value);
+
+  setValueOnPath(contents, target, fileSync.value);
 
   return JSON.stringify(contents, null, 2);
 };
 
 const yamlSync = (targetFileContents: string, fileSync: FileSyncType) => {
-  const doc = YAML.parseDocument(targetFileContents);
+  const contents = YAML.parseDocument(targetFileContents).toJS();
+  const target = <string[]>fileSync.target;
 
-  doc.setIn(fileSync.target, fileSync.value);
+  setValueOnPath(contents, target, fileSync.value);
 
-  return doc.toString({ lineWidth: 0, minContentWidth: 0 });
+  return YAML.stringify(contents, { lineWidth: 0, minContentWidth: 0 });
 };
 
 const regexSync = (targetFileContents: string, fileSync: FileSyncType) => {
