@@ -10,14 +10,14 @@ const LinkHeader = require('parse-link-header');
 const GLUE_OPS_BOT_LABEL = 'GlueOpsBot';
 
 export const createPr = async ({
-  title, owner, repo, head, base, jobName, apiBaseUrl,
+  title, body, owner, repo, head, base, jobName, apiBaseUrl,
 }) => {
   const gh = GhClient({ apiBaseUrl });
 
   let pr;
   try {
     pr = await gh.rest.pulls.create({
-      title, owner, repo, head, base,
+      title, body, owner, repo, head, base,
     });
 
     await gh.rest.issues.addLabels({

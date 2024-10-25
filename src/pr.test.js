@@ -28,6 +28,7 @@ describe('PR', () => {
     it('creates a PR and labels it', async () => {
       const pr = await createPr({
         title: 'testPR',
+        body: 'testPR',
         owner: REPOSITORY_URL.owner,
         repo: REPOSITORY_URL.name,
         base: 'master',
