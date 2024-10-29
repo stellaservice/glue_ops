@@ -5,6 +5,9 @@ export interface Job {
   approval: {
     enabled: boolean
   }
+  pr: {
+    body: string
+  },
   merge: {
     method: 'squash' | 'merge'
     pollPrTimeout: number
