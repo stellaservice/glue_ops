@@ -2,7 +2,7 @@
   "name": "glue_ops",
   "author": "Steven Goodstein <sgoodstein@medallia.com>",
   "engines": {
-    "node": ">=18.16.0"
+    "node": ">=20.8.0"
   },
   "scripts": {
     "lint": "eslint src cmds glue_ops.ts --ext .js --ext .ts",
@@ -40,5 +40,5 @@
     "setup-polly-jest": "^0.11.0",
     "typescript": "^5.2.2"
   },
-  "version": "2.3.0"
+  "version": "2.5.0"
 }

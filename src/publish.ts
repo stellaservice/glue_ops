@@ -109,7 +109,7 @@ const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRu
 
     const prInfo = {
       title: commitMessage,
-      body: commitMessage,
+      body: job.pr.body || commitMessage,
       owner: repositoryUrl.owner,
       repo: repositoryUrl.name,
       base: job.branch,
