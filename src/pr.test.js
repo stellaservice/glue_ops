@@ -156,11 +156,11 @@ describe('PR', () => {
   describe('revertPr', () => {
     it('creates a revert PR based on the pr id', async () => {
       const prId = 'PR_kwDOI2MKRc5PhoP1';
-      const response = await revertPr(GraphqlGhClient(), prId);
+      const response = await revertPr(GraphqlGhClient(), prId, 'Test body\n Testing');
       const { url, number } = response.revertPullRequest.revertPullRequest;
 
-      expect(url).toBe('https://github.com/stellaservice/glueops-test-repo/pull/17');
-      expect(number).toBe(17);
+      expect(url).toBe('https://github.com/stellaservice/glueops-test-repo/pull/25');
+      expect(number).toBe(25);
     });
   });
 

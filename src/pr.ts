@@ -203,7 +203,7 @@ export const mergePr = async (
   }
 };
 
-export const revertPr = async (ghGraphQlClient: typeof graphql, pullRequestId: string): Promise<GraphQlQueryResponseData> => {
+export const revertPr = async (ghGraphQlClient: typeof graphql, pullRequestId: string, body: string): Promise<GraphQlQueryResponseData> => {
   const response: GraphQlQueryResponseData = await ghGraphQlClient({
     query: `mutation revertPR($input: RevertPullRequestInput!) {
                  revertPullRequest(input: $input) {
@@ -215,7 +215,7 @@ export const revertPr = async (ghGraphQlClient: typeof graphql, pullRequestId: s
                  }
                }
     `,
-    input: { pullRequestId },
+    input: { pullRequestId, body },
   });
 
   return response;

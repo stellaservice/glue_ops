@@ -39,7 +39,24 @@ describe('RollbackPublish', () => {
     await RollbackPublish(config, opts);
 
     expect(findGlueOpsBotPrs).toBeCalled();
-    expect(revertPr).toBeCalledWith(GraphqlGhClient(), nodeId);
+    expect(revertPr).toBeCalledWith(GraphqlGhClient(), nodeId, '');
+    expect(addLabelsToPr).toBeCalledWith(
+      expect.objectContaining({
+        ghClient: RestGhClient(),
+        prNumber: 9,
+        additionalLabels: ['Rollback'],
+      }),
+    );
+  });
+
+  it('calls with pr body', async () => {
+    const opts = { dryRun: false };
+    const config = loadTemplatedConfiguration('test/fixtures/glue_ops_jobs_pr_body.yaml');
+
+    await RollbackPublish(config, opts);
+
+    expect(findGlueOpsBotPrs).toBeCalled();
+    expect(revertPr).toBeCalledWith(GraphqlGhClient(), nodeId, 'test body');
     expect(addLabelsToPr).toBeCalledWith(
       expect.objectContaining({
         ghClient: RestGhClient(),
