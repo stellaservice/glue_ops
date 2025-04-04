@@ -15,7 +15,9 @@ const JOB_CONFIGURATION_DEFAULTS = {
   approval: {
     enabled: true,
   },
-  pr: {},
+  pr: {
+    body: '',
+  },
   merge: {
     method: 'squash',
     pollPrTimeout: 600,
