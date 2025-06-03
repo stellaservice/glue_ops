@@ -32,5 +32,5 @@ jobs:
       - name: Publish package
         run: |
           npm set registry https://registry.npmjs.org
-          npm set _authToken ${{ secrets.NPM_PUBLISH_TOKEN}}
+          npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_PUBLISH_TOKEN}}
           npm publish
