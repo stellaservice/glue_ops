@@ -8,6 +8,7 @@ import {
   findGlueOpsBotPrs,
   revertPr,
   addLabelsToPr,
+  updatePrBase,
 } from './pr';
 
 const GhUrlParser = require('parse-github-url');
@@ -82,6 +83,13 @@ describe('PR', () => {
       const returnValue = await pollStatusCheck(GhClient(), pr, repositoryUrl, timeout);
 
       expect(returnValue).toBe(false);
+    });
+  });
+
+  describe('updatePrBase', () => {
+    it('updates the base of a PR', async () => {
+      const result = await updatePrBase(GhClient(), { owner: 'stellaservice', repo: 'glueops-test-repo', pull_number: 26 });
+      console.log(result);
     });
   });
 

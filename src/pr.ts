@@ -159,14 +159,27 @@ export const approvePr = async (ghClient: OctokitRest, pr: { number: number }, r
   }
 };
 
+export const updatePrBase = async (
+  ghClient: OctokitRest,
+  prData: PrDetails,
+) => {
+  consola.info("PR's branch is behind upstream, updating branch with latest changes");
+  await ghClient.rest.pulls.updateBranch({ ...prData });
+};
+
 export const pollStatusCheck = async (ghClient: OctokitRest, pr, repositoryUrl: RepositoryUrlType, timeout: number) => {
   const { owner, name: repo } = repositoryUrl;
   const startPollTime = dateEpochSeconds();
 
   while (true) {
-    const pullState = await ghClient.pulls.get({ owner, repo, pull_number: pr.number });
+    const prData = { owner, repo, pull_number: pr.number };
+    const pullState = await ghClient.pulls.get(prData);
     if (pullState.data.mergeable === true && pullState.data.mergeable_state === 'clean') {
       return true;
+    }
+
+    if (pullState.data.mergeable_state === 'behind') {
+      updatePrBase(ghClient, prData);
     }
 
     const timeElapsed = (dateEpochSeconds() - startPollTime);
@@ -233,6 +246,12 @@ interface AddLabelsInput {
   prNumber: number
   job: Job
   additionalLabels?: string[]
+}
+
+interface PrDetails {
+  owner: string,
+  repo: string,
+  pull_number: number,
 }
 
 export const addLabelsToPr = async ({
