@@ -1,4 +1,4 @@
-import { FileSyncType, FileSyncsType } from './commonTypes';
+import { SyncType, FileSyncType, FileSyncsType, MirrorSyncType } from './commonTypes';
 
 const consola = require('consola');
 const fs = require('fs');
@@ -39,10 +39,18 @@ const regexSync = (targetFileContents: string, fileSync: FileSyncType) => {
   return contents.replace(new RegExp(target), fileSync.value);
 };
 
-export const runSync = (fileSync: FileSyncType, dryRun = false) => {
+const mirrorSync = (fileSync: MirrorSyncType) => (
+  fs.readFileSync(fileSync.source, 'utf8')
+);
+
+export const runSync = (fileSync: SyncType, dryRun = false) => {
   fileSync.files.forEach((file) => {
-    const targetFileContents = fs.readFileSync(file, 'utf8');
     let syncedContents = '';
+    let targetFileContents = '';
+
+    if (!(fileSync.type === 'mirror')) {
+      targetFileContents = fs.readFileSync(file, 'utf8');
+    }
 
     switch (fileSync.type) {
       case 'json':
@@ -53,6 +61,9 @@ export const runSync = (fileSync: FileSyncType, dryRun = false) => {
         break;
       case 'regex':
         syncedContents = regexSync(targetFileContents, fileSync);
+        break;
+      case 'mirror':
+        syncedContents = mirrorSync(fileSync);
         break;
       default:
         return consola.error('Unsupported file sync type');

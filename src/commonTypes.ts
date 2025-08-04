@@ -22,8 +22,16 @@ export interface FileSyncType {
   files: string[]
 }
 
+export interface MirrorSyncType {
+  type: 'mirror'
+  source: string
+  files: string[]
+}
+
+export type SyncType = FileSyncType | MirrorSyncType;
+
 export interface FileSyncsType {
-  [key: string]: FileSyncType
+  [key: string]: SyncType
 }
 
 export interface ConfigurationType {

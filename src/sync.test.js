@@ -52,6 +52,20 @@ describe('run', () => {
         expect(testFile.image.tag).toBe('syncedTag');
       });
     });
+
+    describe('mirroring sync', () => {
+      const tmpFilePath = '/tmp/test-sync-destination.yaml';
+
+      test('it mirror syncs the two files', () => {
+        const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
+        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+
+        runSync(fileSync);
+
+        const testFile = readYamlFile(tmpFilePath);
+        expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
+      });
+    });
   });
 
   describe('runAllSyncs', () => {
