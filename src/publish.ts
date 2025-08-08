@@ -1,6 +1,7 @@
 import { runSync } from './sync';
 import { createPr, cleanUpOldPrs } from './pr';
 import { ConfigurationType, CommandOptions } from './commonTypes';
+import { runInDirectory } from './utils';
 
 const consola = require('consola');
 const fs = require('fs');
@@ -60,16 +61,6 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
     .add('.')
     .commit(commitMessage)
     .push('origin', prBranchName);
-};
-
-const runInDirectory = (directory, callback) => {
-  const cwd = process.cwd();
-
-  process.chdir(directory);
-
-  callback();
-
-  process.chdir(cwd);
 };
 
 const runFilesyncs = (config, job, workingDirectory, dryRun) => {

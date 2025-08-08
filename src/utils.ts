@@ -28,3 +28,13 @@ export const GraphqlGhClient = ({
     headers: { authorization: `token ${token}` },
   })
 );
+
+export const runInDirectory = (directory: string, callback: () => void) => {
+  const cwd = process.cwd();
+
+  process.chdir(directory);
+
+  callback();
+
+  process.chdir(cwd);
+};

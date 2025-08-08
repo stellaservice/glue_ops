@@ -1,4 +1,5 @@
 import { runSync, runAllSyncs } from './sync';
+const crypto = require('crypto');
 
 const fs = require('fs-extra');
 const readYamlFile = require('../test/utils/readYamlFile');
@@ -56,7 +57,7 @@ describe('run', () => {
     describe('mirroring sync', () => {
       const tmpFilePath = '/tmp/test-sync-destination.yaml';
 
-      test('it mirror syncs the two files', () => {
+      it('it mirror syncs the two files', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
         const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
 
@@ -64,6 +65,19 @@ describe('run', () => {
 
         const testFile = readYamlFile(tmpFilePath);
         expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
+      });
+
+      it('includes the synchronization hash', () => {
+        const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
+        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+
+        runSync(fileSync);
+
+        const sourceFile = fs.readFileSync(configFilePath, 'utf-8');
+        const sha = crypto.createHash('sha256').update(sourceFile).digest('hex');
+        const testFile = fs.readFileSync(tmpFilePath, 'utf-8');
+
+        expect(testFile.match(new RegExp(sha))).toBeTruthy();
       });
     });
   });
