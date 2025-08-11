@@ -57,11 +57,27 @@ describe('run', () => {
     describe('mirroring sync', () => {
       const tmpFilePath = '/tmp/test-sync-destination.yaml';
 
-      it('it mirror syncs the two files', () => {
+      afterEach(() => {
+        fs.removeSync(tmpFilePath);
+      });
+
+      it('it mirror syncs from a soure to destination', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
         const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
 
         runSync(fileSync);
+
+        const testFile = readYamlFile(tmpFilePath);
+        expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
+      });
+
+      it('it can sync from specified directory', () => {
+        const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
+        console.log('huh');
+        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        console.log('okay');
+
+        runSync(fileSync, { sourceDirectory: process.cwd() });
 
         const testFile = readYamlFile(tmpFilePath);
         expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
