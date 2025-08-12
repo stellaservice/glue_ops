@@ -1,5 +1,5 @@
 fileSyncs:
-  UpdateWebImage:
+  MirrorSyncConfig:
     type: 'mirror'
     synchronizationHash: true
     source:

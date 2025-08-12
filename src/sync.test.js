@@ -63,29 +63,29 @@ describe('run', () => {
 
       it('it mirror syncs from a soure to destination', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
 
         runSync(fileSync);
 
         const testFile = readYamlFile(tmpFilePath);
-        expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
+        expect(testFile.fileSyncs.MirrorSyncConfig.type).toBe('mirror');
       });
 
       it('it can sync from specified directory', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
         console.log('huh');
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
         console.log('okay');
 
         runSync(fileSync, { sourceDirectory: process.cwd() });
 
         const testFile = readYamlFile(tmpFilePath);
-        expect(testFile.fileSyncs.UpdateWebImage.type).toBe('mirror');
+        expect(testFile.fileSyncs.MirrorSyncConfig.type).toBe('mirror');
       });
 
       it('includes the synchronization hash', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
 
         runSync(fileSync);
 
@@ -94,6 +94,26 @@ describe('run', () => {
         const testFile = fs.readFileSync(tmpFilePath, 'utf-8');
 
         expect(testFile.match(new RegExp(sha))).toBeTruthy();
+      });
+
+      describe('synchronization hash with mirror and sync', () => {
+        it('will update the hash ', () => {
+          const configFilePath = `${fixturePath}/glue_ops_file_sync_hash.fixture.yaml`;
+          const fileSyncMirror = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
+          const fileSyncYaml = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+
+          const hashCommentRegex = /# Synchronization-Hash: ([a-z0-9]+)/;
+
+          runSync(fileSyncMirror);
+          const fileAfterMirror = fs.readFileSync(tmpFilePath, 'utf-8');
+          const afterMirrorHash = fileAfterMirror.match(hashCommentRegex)[1];
+
+          runSync(fileSyncYaml);
+          const fileAfterSync = fs.readFileSync(tmpFilePath, 'utf-8');
+          const afterSyncHash = fileAfterSync.match(hashCommentRegex)[1];
+
+          expect(afterMirrorHash).not.toBe(afterSyncHash);
+        });
       });
     });
   });
