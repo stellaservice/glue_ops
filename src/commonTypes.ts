@@ -20,19 +20,23 @@ export interface FileSyncType {
   target: string[] | string
   value: string
   files: string[]
-  synchronizationHash?: string
+  synchronizationHash?: SynchronizationHashType
 }
 
 export interface MirrorSyncType {
   type: 'mirror'
-  synchronizationHash?: string
+  synchronizationHash?: SynchronizationHashType
   source: SourceType
   files: string[]
 }
 
+interface SynchronizationHashType {
+  enabled: boolean
+  commentSyntax: string
+}
+
 export interface SourceType {
   path: string
-  directory: string
 }
 
 export type SyncType = FileSyncType | MirrorSyncType;

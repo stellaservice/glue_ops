@@ -1,4 +1,6 @@
 import { runSync, runAllSyncs } from './sync';
+import loadTemplatedConfiguration from './config';
+
 const crypto = require('crypto');
 
 const fs = require('fs-extra');
@@ -17,7 +19,7 @@ describe('run', () => {
 
       test('it syncs the image tag via yaml sync', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_yaml.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.UpdateWebImage;
 
         runSync(fileSync);
 
@@ -27,7 +29,7 @@ describe('run', () => {
 
       test('it syncs the image repo via regex sync', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_regex.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.UpdateWebImage;
 
         runSync(fileSync);
 
@@ -45,7 +47,7 @@ describe('run', () => {
 
       test('it syncs the image tag via json sync', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_json.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.UpdateWebImage;
 
         runSync(fileSync);
 
@@ -63,7 +65,7 @@ describe('run', () => {
 
       it('it mirror syncs from a soure to destination', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.MirrorSyncConfig;
 
         runSync(fileSync);
 
@@ -73,9 +75,7 @@ describe('run', () => {
 
       it('it can sync from specified directory', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
-        console.log('huh');
-        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
-        console.log('okay');
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.MirrorSyncConfig;
 
         runSync(fileSync, { sourceDirectory: process.cwd() });
 
@@ -85,7 +85,7 @@ describe('run', () => {
 
       it('includes the synchronization hash', () => {
         const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
-        const fileSync = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.MirrorSyncConfig;
 
         runSync(fileSync);
 
@@ -99,8 +99,9 @@ describe('run', () => {
       describe('synchronization hash with mirror and sync', () => {
         it('will update the hash ', () => {
           const configFilePath = `${fixturePath}/glue_ops_file_sync_hash.fixture.yaml`;
-          const fileSyncMirror = readYamlFile(configFilePath).fileSyncs.MirrorSyncConfig;
-          const fileSyncYaml = readYamlFile(configFilePath).fileSyncs.UpdateWebImage;
+          const configFile = loadTemplatedConfiguration(configFilePath);
+          const fileSyncMirror = configFile.fileSyncs.MirrorSyncConfig;
+          const fileSyncYaml = configFile.fileSyncs.UpdateWebImage;
 
           const hashCommentRegex = /# Synchronization-Hash: ([a-z0-9]+)/;
 
@@ -126,7 +127,7 @@ describe('run', () => {
     });
 
     it('calls runSync with each file sync', () => {
-      const config = readYamlFile(`${fixturePath}/glue_ops_file_sync_multi.yaml`);
+      const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_file_sync_multi.yaml`);
       runAllSyncs(config.fileSyncs);
 
       const testFile = readYamlFile(tmpFilePath);

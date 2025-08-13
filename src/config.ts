@@ -24,6 +24,14 @@ const JOB_CONFIGURATION_DEFAULTS = {
     hooks: [],
   },
 };
+
+const SYNC_CONFIGURATION_DEFAULTS = {
+  synchronizationHash: {
+    enabled: false,
+    commentSyntax: '#',
+  },
+};
+
 /* eslint-disable no-param-reassign */
 const parseCliReplacements = (replacementValues) => {
   if (!Array.isArray(replacementValues)) {
@@ -48,6 +56,12 @@ const mergeDefaults = (config: ConfigurationType) => {
     for (let i = 0; i < config.jobs.length; i++) {
       config.jobs[i] = merge(JOB_CONFIGURATION_DEFAULTS, config.jobs[i]);
     }
+  }
+
+  if (config.fileSyncs) {
+    Object.keys(config.fileSyncs).forEach((key) => {
+      config.fileSyncs[key] = merge(SYNC_CONFIGURATION_DEFAULTS, config.fileSyncs[key]);
+    });
   }
   return config;
 };

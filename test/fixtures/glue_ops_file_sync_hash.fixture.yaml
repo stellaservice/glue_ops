@@ -1,13 +1,15 @@
 fileSyncs:
   MirrorSyncConfig:
     type: 'mirror'
-    synchronizationHash: true
+    synchronizationHash:
+      enabled: true
     source:
       path: 'test/fixtures/glue_ops_file_sync_hash.fixture.yaml'
     files: ['/tmp/test-sync-destination.yaml']
   UpdateWebImage:
     type: 'yaml'
-    synchronizationHash: true
+    synchronizationHash:
+      enabled: true
     target: ['fileSyncs', 'UpdateWebImage', 'foo']
     value: test!
     files: ['/tmp/test-sync-destination.yaml']
