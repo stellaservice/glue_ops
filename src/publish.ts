@@ -1,6 +1,11 @@
 import { runSync } from './sync';
 import { createPr, cleanUpOldPrs } from './pr';
-import { ConfigurationType, CommandOptions } from './commonTypes';
+import {
+  ConfigurationType,
+  CommandOptions,
+  Job,
+} from './commonTypes';
+import { runInDirectory } from './utils';
 
 const consola = require('consola');
 const fs = require('fs');
@@ -62,23 +67,13 @@ const commitPushChanges = ({ git, prBranchName, commitMessage }, dryRun = false)
     .push('origin', prBranchName);
 };
 
-const runInDirectory = (directory, callback) => {
-  const cwd = process.cwd();
-
-  process.chdir(directory);
-
-  callback();
-
-  process.chdir(cwd);
-};
-
-const runFilesyncs = (config, job, workingDirectory, dryRun) => {
+const runFilesyncs = (config: ConfigurationType, job: Job, sourceDirectory: string, workingDirectory: string, dryRun: boolean) => {
   job.fileSyncs.forEach((sync) => {
     consola.info(`Running file sync: ${sync}`);
 
     if (!dryRun) {
       runInDirectory(workingDirectory, () => {
-        runSync(config.fileSyncs[sync]);
+        runSync(config.fileSyncs[sync], { sourceDirectory });
       });
     }
   });
@@ -87,7 +82,8 @@ const runFilesyncs = (config, job, workingDirectory, dryRun) => {
 const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRun: false }) => {
   const repositoryUrl = new GhUrlParser(config.repository.url);
 
-  let workingDirectory = process.cwd();
+  const sourceDirectory = process.cwd();
+  let workingDirectory = sourceDirectory;
 
   if (!config.repository.local) {
     workingDirectory = `${config.repository.cloneDirectory}/${repositoryUrl.name}`;
@@ -103,7 +99,7 @@ const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRu
 
     await checkoutBranch({ git, job, prBranchName }, opts.dryRun);
 
-    runFilesyncs(config, job, workingDirectory, opts.dryRun);
+    runFilesyncs(config, job, sourceDirectory, workingDirectory, opts.dryRun);
 
     await commitPushChanges({ git, prBranchName, commitMessage }, opts.dryRun);
 

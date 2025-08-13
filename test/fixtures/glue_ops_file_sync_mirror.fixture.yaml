@@ -1,0 +1,8 @@
+fileSyncs:
+  MirrorSyncConfig:
+    type: 'mirror'
+    synchronizationHash:
+      enabled: true
+    source:
+      path: 'test/fixtures/glue_ops_file_sync_mirror.fixture.yaml'
+    files: ['/tmp/test-sync-destination.yaml']

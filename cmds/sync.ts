@@ -12,7 +12,7 @@ const syncCommand = {
     const config = loadTemplatedConfiguration(argv.configPath, argv.replacementValues);
     if (argv.syncName) {
       if (config.fileSyncs[argv.syncName]) {
-        return runSync(config.fileSyncs[argv.syncName], argv.dryRun);
+        return runSync(config.fileSyncs[argv.syncName], { dryRun: argv.dryRun });
       }
       consola.error('Sync name not found');
       process.exit(1);

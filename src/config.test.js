@@ -38,5 +38,12 @@ describe('loadTemplatedConfiguration', () => {
       expect(config.jobs[0].merge.pollPrTimeout).toBe(600);
       expect(config.jobs[0].approval.enabled).toBe(true);
     });
+
+    it('merges sync defaults', () => {
+      const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_jobs_standard.yaml`);
+
+      expect(config.fileSyncs.UpdateWebImage.synchronizationHash.enabled).toBe(false);
+      expect(config.fileSyncs.UpdateWebImage.synchronizationHash.commentSyntax).toBe('#');
+    });
   });
 });

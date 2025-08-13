@@ -20,10 +20,29 @@ export interface FileSyncType {
   target: string[] | string
   value: string
   files: string[]
+  synchronizationHash?: SynchronizationHashType
 }
 
+export interface MirrorSyncType {
+  type: 'mirror'
+  synchronizationHash?: SynchronizationHashType
+  source: SourceType
+  files: string[]
+}
+
+interface SynchronizationHashType {
+  enabled: boolean
+  commentSyntax: string
+}
+
+export interface SourceType {
+  path: string
+}
+
+export type SyncType = FileSyncType | MirrorSyncType;
+
 export interface FileSyncsType {
-  [key: string]: FileSyncType
+  [key: string]: SyncType
 }
 
 export interface ConfigurationType {

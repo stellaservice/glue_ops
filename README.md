@@ -65,6 +65,14 @@ fileSyncs:
     files:
       - filePath1
       - filePath2
+  namedMirrorSync:
+    type: mirror
+    synchronizationHash:
+      enabled: false # [default] - Only use this if GlueOps is the exclusive author (mirroring)
+      commentSyntax: '#' # [default]
+    source:
+      path: "path/from/rootDir" # Operates from source dir not cloned dir
+    files: [filePath1, filePath2]
 
 jobs:
   - name: UniqueName # Make this name unique (collisions for the same repo & base branch can be dangerous)
@@ -107,3 +115,14 @@ The run command automates the entire process of publish/merge as a single call. 
 8. Polls PR status *[merge]*
 9. Merges PR *[merge]*
 10. Runs merge hooks if applicable *[merge]*
+
+## Synchronization Hash
+This feature leaves a comment at the top of modified files to indicate it was authored by a machine and includes a synchronization hash.
+```
+# This file is being modified by glue-ops. Do not edit manually.
+# Synchronization-Hash: 84de908c8f0c39b395e91e815d2073d30ca9211611e6bfe81da305edf688fb0f
+```
+
+This hash is validated on future runs to ensure the file was not modified by someone other than GlueOps.  Validation failure will raise an error.  This is a saftey mechanism  to avoid overriding changes made outside the scope of GlueOps.  This is typically used with `type: mirror` where you only want changes to your desintation to come from the source defined in GlueOps.
+
+If you use mirror and another sync on the same file for example a `type: yaml` you should also enabled synchronizationHash so that the hash will be updated with the changes from your YAML sync.  The YAML sync should come after the mirror.
