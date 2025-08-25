@@ -1,0 +1,10 @@
+# This file is being modified by glue-ops. Do not edit manually.
+# Synchronization-Hash: 0f1c4db542e4d4495c83364d665c0802ee2fea13180ra27fc6f3055e2b1c73
+
+foo:
+  bar: 'testingBar'
+  complex:
+    nesting: 'testingNesting'
+image:
+  tag: 'testingTag'
+repository: 'testingRepository'

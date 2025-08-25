@@ -1,3 +1,4 @@
+import { consola } from 'consola';
 import { runSync, runAllSyncs } from './sync';
 import loadTemplatedConfiguration from './config';
 
@@ -115,6 +116,21 @@ describe('run', () => {
 
           expect(afterMirrorHash).not.toBe(afterSyncHash);
         });
+      });
+
+      it('will error if the hash has been modified', () => {
+        const consolaFatalMock = jest.fn();
+        consola.mockTypes((typeName) => typeName === 'fatal' && consolaFatalMock);
+        const mockExit = jest.spyOn(process, 'exit').mockImplementation();
+        fs.copySync(`${fixturePath}/bad_hash.yaml`, tmpFilePath);
+        const configFilePath = `${fixturePath}/glue_ops_file_sync_mirror.fixture.yaml`;
+        const fileSync = loadTemplatedConfiguration(configFilePath).fileSyncs.MirrorSyncConfig;
+
+        runSync(fileSync);
+        expect(consolaFatalMock).toBeCalled();
+        expect(mockExit).toBeCalledWith(1);
+
+        jest.restoreAllMocks();
       });
     });
   });

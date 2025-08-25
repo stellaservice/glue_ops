@@ -1,6 +1,6 @@
 import * as YAML from 'yaml';
 import { YAMLMap } from 'yaml';
-import consola from 'consola';
+import { consola } from 'consola';
 import * as fs from 'fs';
 
 import {

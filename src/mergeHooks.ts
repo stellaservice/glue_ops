@@ -1,4 +1,5 @@
-const consola = require('consola');
+import { consola } from 'consola';
+
 const { execSync } = require('child_process');
 
 const MergeHooks = (hooks: string[], sha: string) => {

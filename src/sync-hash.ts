@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import consola from 'consola';
+import { consola } from 'consola';
 
 const AUTO_GENERATED_INTRO: string = 'This file is being modified by glue-ops. Do not edit manually.';
 const SYNCHRONIZATION_HASH_BASE: string = 'Synchronization-Hash:';
@@ -21,8 +21,10 @@ const validateTargetFileHash = (contents: string) => {
   const valid = sha256(cleanContent(contents)) === targetHash;
 
   if (!valid) {
-    consola.error('The target file has been modified and does not match it\'s Synchronization-Hash.');
+    consola.fatal('The target file has been modified and does not match it\'s Synchronization-Hash.');
     process.exit(1);
+  } else {
+    return valid;
   }
 };
 

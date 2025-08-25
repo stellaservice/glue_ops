@@ -1,3 +1,4 @@
+import { consola } from 'consola';
 import { RestGhClient as GhClient } from './utils';
 import { ConfigurationType, CommandOptions } from './commonTypes';
 import {
@@ -6,7 +7,6 @@ import {
 import MergeHooks from './mergeHooks';
 import { ROLLBACK_LABEL } from './rollbackPublish';
 
-const consola = require('consola');
 const GhUrlParser = require('parse-github-url');
 
 const Merge = async (
@@ -51,7 +51,7 @@ const Merge = async (
       const pollResult = await pollStatusCheck(ghClient, pr, repositoryUrl, job.merge.pollPrTimeout);
 
       if (pollResult === false) {
-        consola.info(`Timeout reached ${job.merge.pollPrTimeout} seconds.  No mergable PR found.`);
+        consola.fatal(`Timeout reached ${job.merge.pollPrTimeout} seconds.  No mergable PR found.`);
         process.exit(1);
       }
     }
