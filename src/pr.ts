@@ -1,10 +1,10 @@
+import { consola } from 'consola';
 import type { GraphQlQueryResponseData } from '@octokit/graphql';
 import type { Octokit as OctokitRest } from '@octokit/rest';
 import { graphql } from '@octokit/graphql';
 import type { Job } from './commonTypes';
 import { RestGhClient as GhClient } from './utils';
 
-const consola = require('consola');
 const LinkHeader = require('parse-link-header');
 
 const GLUE_OPS_BOT_LABEL = 'GlueOpsBot';

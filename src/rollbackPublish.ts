@@ -1,3 +1,4 @@
+import { consola } from 'consola';
 import { GraphqlGhClient, RestGhClient } from './utils';
 import {
   findGlueOpsBotPrs,
@@ -6,7 +7,6 @@ import {
 } from './pr';
 import { ConfigurationType, CommandOptions } from './commonTypes';
 
-const consola = require('consola');
 const GhUrlParser = require('parse-github-url');
 
 export const ROLLBACK_LABEL = 'Rollback';

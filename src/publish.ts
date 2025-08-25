@@ -1,3 +1,4 @@
+import { consola } from 'consola';
 import { runSync } from './sync';
 import { createPr, cleanUpOldPrs } from './pr';
 import {
@@ -7,7 +8,6 @@ import {
 } from './commonTypes';
 import { runInDirectory } from './utils';
 
-const consola = require('consola');
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const uuid = require('uuid');

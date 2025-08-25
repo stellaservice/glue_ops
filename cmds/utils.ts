@@ -1,7 +1,6 @@
+import { consola } from 'consola';
 import loadTemplatedConfiguration from '../src/config';
 import { ConfigurationType } from '../src/commonTypes';
-
-const consola = require('consola');
 
 export const DefaultOptions = {
   configPathOption: {

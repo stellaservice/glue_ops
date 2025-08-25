@@ -1,8 +1,7 @@
+import { consola } from 'consola';
 import loadTemplatedConfiguration from '../src/config';
 import { runAllSyncs, runSync } from '../src/sync';
 import { commonOptionFlags, CommonArgv } from './utils';
-
-const consola = require('consola');
 
 const syncCommand = {
   command: 'sync [syncName]',
