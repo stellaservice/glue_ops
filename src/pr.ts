@@ -164,7 +164,8 @@ export const updatePrBase = async (
   prData: PrDetails,
 ) => {
   consola.info("PR's branch is behind upstream, updating branch with latest changes");
-  await ghClient.rest.pulls.updateBranch({ ...prData });
+  const response = await ghClient.rest.pulls.updateBranch({ ...prData });
+  return response;
 };
 
 export const pollStatusCheck = async (ghClient: OctokitRest, pr, repositoryUrl: RepositoryUrlType, timeout: number) => {

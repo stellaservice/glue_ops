@@ -1,3 +1,4 @@
+import * as timers from 'timers/promises';
 import loadTemplatedConfiguration from './config';
 import Publish from './publish';
 
@@ -44,16 +45,18 @@ describe('Publish', () => {
   const commitMessage = `GlueOps bot: ${jobName}`;
   const syncReplacmentValue = config.fileSyncs.UpdateWebImage.value;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     process.env = { GITHUB_TOKEN: ghToken };
     fs.rmSync(cloneDirectory, { recursive: true, force: true });
+    await timers.setTimeout(200);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     fs.rmSync(cloneDirectory, { recursive: true, force: true });
     jest.clearAllMocks();
     process.env = OLD_ENV;
     process.chdir(OLD_CWD);
+    await timers.setTimeout(200);
   });
 
   it('checks out a branch, runs syncs, commits and PRs changes', async () => {
@@ -87,6 +90,17 @@ describe('Publish', () => {
     const prInfo = { base: baseBranch, title: commitMessage };
     expect(createPr).toBeCalledWith(expect.objectContaining(prInfo));
     expect(cleanUpOldPrs).toBeCalledWith(expect.objectContaining({ ...prInfo, newPrNumber: 3 }));
+  });
+
+  it('accepts commit message from config', async () => {
+    const localConfig = loadTemplatedConfiguration('test/fixtures/glue_ops_jobs_commit_message.yaml');
+    await Publish(localConfig);
+
+    const git = await simpleGit();
+    await git.cwd(repoPath);
+    await git.branch(); // Helps avoid race condition
+    const log = await git.log();
+    expect(log.latest.message).toBe(localConfig.jobs[0].commit.message);
   });
 
   describe('when dryRun is set', () => {

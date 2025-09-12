@@ -89,7 +89,7 @@ describe('PR', () => {
   describe('updatePrBase', () => {
     it('updates the base of a PR', async () => {
       const result = await updatePrBase(GhClient(), { owner: 'stellaservice', repo: 'glueops-test-repo', pull_number: 26 });
-      console.log(result);
+      expect(result.status).toBe(202);
     });
   });
 

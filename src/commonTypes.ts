@@ -8,6 +8,9 @@ export interface Job {
   pr: {
     body: string
   },
+  commit: {
+    message: string
+  }
   merge: {
     method: 'squash' | 'merge'
     pollPrTimeout: number

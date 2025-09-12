@@ -1,0 +1,17 @@
+repository:
+  url: https://github.test.com/org/testRepo
+
+fileSyncs:
+  UpdateWebImage:
+    type: 'yaml'
+    target: ['image', 'tag']
+    value: tagTest
+    files:
+      - 'config.yaml'
+
+jobs:
+  - name: 'TestJob'
+    fileSyncs: [UpdateWebImage]
+    branch: master
+    commit:
+      message: "fix: bug"
