@@ -199,6 +199,7 @@ export const mergePr = async (
   pr: { number: number },
   repositoryUrl: RepositoryUrlType,
   mergeMethod: 'merge' | 'squash' | 'rebase',
+  commitMessage?: string,
 ) => {
   const { owner, name: repo } = repositoryUrl;
 
@@ -208,6 +209,7 @@ export const mergePr = async (
       repo,
       merge_method: mergeMethod,
       pull_number: pr.number,
+      commit_title: commitMessage,
     });
 
     consola.success(`Merged PR: ${repositoryUrl.href}/pull/${pr.number}`);

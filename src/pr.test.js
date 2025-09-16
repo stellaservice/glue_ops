@@ -105,13 +105,21 @@ describe('PR', () => {
   });
 
   describe('mergePr', () => {
-    const pr = { number: 3 };
     const repositoryUrl = new GhUrlParser('https://github.com/stellaservice/glueops-test-repo');
     const mergeMethod = 'squash';
 
     it('merges PR', async () => {
+      const pr = { number: 26 };
       const returnValue = await mergePr(GhClient(), pr, repositoryUrl, mergeMethod);
 
+      expect(returnValue.status).toBe(200);
+    });
+
+    it('can accept a commit message', async () => {
+      const pr = { number: 31 };
+      const commitMessage = 'Test commit message';
+
+      const returnValue = await mergePr(GhClient(), pr, repositoryUrl, mergeMethod, commitMessage);
       expect(returnValue.status).toBe(200);
     });
   });

@@ -80,10 +80,13 @@ jobs:
     branch: master # Used to branch off of and PR back to
     approval:
       enabled: true # [default]
+    commit:
+      message: '' # Optional
     merge:
       method: 'squash'  # [default] Can be one of: merge, squash, rebase
       pollPrTimeout: 600 # [default] (in seconds)
       hooks: [] # Arbitrary shell command hooks to be run post merge
+      commitMessage: '' # Optional
 ```
 
 ## Authentication
