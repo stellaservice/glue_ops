@@ -59,7 +59,7 @@ const Merge = async (
     consola.info('Merging PR');
     let mergeResult;
     if (commandOpts.dryRun === false) {
-      mergeResult = await mergePr(ghClient, pr, repositoryUrl, job.merge.method);
+      mergeResult = await mergePr(ghClient, pr, repositoryUrl, job.merge.method, job.merge?.commitMessage);
     }
 
     if (job.merge.hooks.length > 0) {

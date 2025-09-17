@@ -164,7 +164,8 @@ export const updatePrBase = async (
   prData: PrDetails,
 ) => {
   consola.info("PR's branch is behind upstream, updating branch with latest changes");
-  await ghClient.rest.pulls.updateBranch({ ...prData });
+  const response = await ghClient.rest.pulls.updateBranch({ ...prData });
+  return response;
 };
 
 export const pollStatusCheck = async (ghClient: OctokitRest, pr, repositoryUrl: RepositoryUrlType, timeout: number) => {
@@ -198,6 +199,7 @@ export const mergePr = async (
   pr: { number: number },
   repositoryUrl: RepositoryUrlType,
   mergeMethod: 'merge' | 'squash' | 'rebase',
+  commitMessage?: string,
 ) => {
   const { owner, name: repo } = repositoryUrl;
 
@@ -207,6 +209,7 @@ export const mergePr = async (
       repo,
       merge_method: mergeMethod,
       pull_number: pr.number,
+      commit_title: commitMessage,
     });
 
     consola.success(`Merged PR: ${repositoryUrl.href}/pull/${pr.number}`);
