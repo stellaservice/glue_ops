@@ -15,7 +15,10 @@ export interface Job {
     method: 'squash' | 'merge'
     pollPrTimeout: number
     hooks: string[]
-    commitMessage: string
+    commit: {
+      message: string,
+      includePrNumber: boolean
+    }
   }
 }
 

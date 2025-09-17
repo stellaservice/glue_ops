@@ -15,10 +15,20 @@ const JOB_CONFIGURATION_DEFAULTS = {
   approval: {
     enabled: true,
   },
+  commit: {
+    message: '',
+  },
+  pr: {
+    body: '',
+  },
   merge: {
     method: 'squash',
     pollPrTimeout: 600,
     hooks: [],
+    commit: {
+      message: '',
+      includePrNumber: true,
+    },
   },
 };
 

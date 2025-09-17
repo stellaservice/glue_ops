@@ -72,7 +72,7 @@ describe('Merge', () => {
       pr,
       repositoryUrl,
       config.jobs[0].merge.method,
-      undefined,
+      'fix: foo (#1)',
     );
     expect(MergeHooks).toBeCalledWith(
       config.jobs[0].merge.hooks,

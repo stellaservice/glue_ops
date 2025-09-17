@@ -86,7 +86,9 @@ jobs:
       method: 'squash'  # [default] Can be one of: merge, squash, rebase
       pollPrTimeout: 600 # [default] (in seconds)
       hooks: [] # Arbitrary shell command hooks to be run post merge
-      commitMessage: '' # Optional
+      commit:
+        message: '' # Optional
+        includePrNumber: true # [default] If using custom merge message this determines if it's postfixed with: (#PrNumber)
 ```
 
 ## Authentication
