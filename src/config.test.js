@@ -25,6 +25,17 @@ describe('loadTemplatedConfiguration', () => {
     });
   });
 
+  describe('replacment value with space', () => {
+    it('templates a replacement with spaces', () => {
+      const testFilePath = `${fixturePath}/glue_ops_template.yaml`;
+      const templateVariables = 'foo=foo bar';
+      const config = loadTemplatedConfiguration(testFilePath, templateVariables);
+
+      expect(typeof config).toBe('object');
+      expect(config.fileSyncs.UpdateWebImage.value).toBe('foo bar');
+    });
+  });
+
   describe('Merges default values', () => {
     it('merges config defaults', () => {
       const config = loadTemplatedConfiguration(`${fixturePath}/glue_ops_jobs_standard.yaml`);
