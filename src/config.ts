@@ -36,7 +36,7 @@ const parseCliReplacements = (replacementValues) => {
   }
 
   return replacementValues.reduce((templateValues, replacement) => {
-    const replacementKv = replacement.replace(/\s+/g, '').split('=');
+    const replacementKv = replacement.trim().split('=');
     const [key, value] = replacementKv;
 
     templateValues[key] = value;
