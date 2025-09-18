@@ -95,7 +95,7 @@ const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRu
   for (let i = 0; i < config.jobs.length; i++) {
     const job = config.jobs[i];
     const prBranchName = `${job.name}-${uuid.v4()}`;
-    const commitMessage = config.jobs[i]?.commit?.message || `GlueOps bot: ${job.name}`;
+    const commitMessage = config.jobs[i].commit.message || `GlueOps bot: ${job.name}`;
 
     await checkoutBranch({ git, job, prBranchName }, opts.dryRun);
 
@@ -105,7 +105,7 @@ const Publish = async (config: ConfigurationType, opts: CommandOptions = { dryRu
 
     const prInfo = {
       title: commitMessage,
-      body: job?.pr?.body || commitMessage,
+      body: job.pr.body || commitMessage,
       owner: repositoryUrl.owner,
       repo: repositoryUrl.name,
       base: job.branch,

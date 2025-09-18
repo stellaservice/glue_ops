@@ -37,7 +37,7 @@ const RollbackPublish = async (config: ConfigurationType, opts: CommandOptions =
     consola.info(`Reverting PR: ${closedPrs[0].url}`);
     let prNumber: number;
     if (opts.dryRun === false) {
-      const body = job?.pr?.body || '';
+      const { body } = job.pr;
       const revertPrResponse = await revertPr(graphQlClient, lastPrId, body);
       prNumber = revertPrResponse.revertPullRequest.revertPullRequest.number;
       consola.success(`Created revert PR: ${revertPrResponse.revertPullRequest.revertPullRequest.url}`);

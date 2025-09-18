@@ -18,3 +18,5 @@ jobs:
       method: 'squash'  # Can be one of: merge, squash, rebase
       pollPrTimeout: 600 # seconds
       hooks: ["/bin/bash -c \"echo $MERGE_SHA\""]
+      commit:
+        message: "fix: foo"
