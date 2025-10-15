@@ -175,7 +175,8 @@ export const pollStatusCheck = async (ghClient: OctokitRest, pr, repositoryUrl: 
   while (true) {
     const prData = { owner, repo, pull_number: pr.number };
     const pullState = await ghClient.pulls.get(prData);
-    if (pullState.data.mergeable === true && pullState.data.mergeable_state === 'clean') {
+    const mergeState = pullState.data.mergeable_state;
+    if (pullState.data.mergeable === true && (mergeState === 'clean' || mergeState === 'has_hooks')) {
       return true;
     }
 
